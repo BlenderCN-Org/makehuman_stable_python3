@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -43,7 +43,7 @@ import gui3d
 import proxychooser
 import filechooser as fc
 import proxy
-
+import log
 
 class ProxyFileSort(fc.FileSort):
 
@@ -56,7 +56,7 @@ class ProxyFileSort(fc.FileSort):
 
         faces = 0
         try:
-            from codecs import open
+            from io import open
             f = open(filename.replace('.proxy', '.obj'), 'rU', encoding="utf-8")
             for line in f:
                 lineData = line.split()
@@ -117,6 +117,7 @@ class ProxyTaskView(proxychooser.ProxyChooserTaskView):
         self.human.setProxy(pxy)
 
         if self.descriptionWidget:
+            log.debug("selectProxy description is: %s", pxy.description)
             self.descrLbl.setText(pxy.description)
 
         # Add to selection

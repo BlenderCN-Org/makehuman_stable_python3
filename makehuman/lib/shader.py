@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -46,6 +46,8 @@ from core import G
 
 class Uniform(object):
     def __init__(self, index, name, pytype, dims):
+        if type(name) is bytes:
+            name = name.decode('utf-8')
         self.index = index
         self.name = name
         self.pytype = pytype
@@ -127,7 +129,7 @@ class VectorUniform(Uniform):
         if len(self.dims) > 1:
             self.glfunc(self.index, 1, GL_TRUE, values)
         else:
-            self.glfunc(self.index, len(values)/self.dims[0], values)
+            self.glfunc(self.index, len(values)//self.dims[0], values)
 
     def update(self, pgm):
         values = np.zeros(self.dims, dtype=self.dtype)
@@ -267,6 +269,7 @@ class Shader(object):
     @classmethod
     def glslVersionStr(cls):
         cls.glslVersion()
+        cls._glsl_version_str = OpenGL.GL.glGetString(OpenGL.GL.GL_SHADING_LANGUAGE_VERSION)
         return cls._glsl_version_str
 
     @classmethod
@@ -278,6 +281,9 @@ class Shader(object):
                 return cls._glsl_version
 
             cls._glsl_version_str = OpenGL.GL.glGetString(OpenGL.GL.GL_SHADING_LANGUAGE_VERSION)
+            # true string rather than byte string
+            cls._glsl_version_str = cls._glsl_version_str.decode("utf-8")
+            log.debug(cls._glsl_version_str)
             if cls._glsl_version_str:
                 import re
                 glsl_version = re.search('[0-9]+\.[0-9]+', cls._glsl_version_str).group(0)
@@ -308,7 +314,7 @@ class Shader(object):
     def __del__(self):
         try:
             self.delete()
-        except StandardError:
+        except Exception:
             pass
 
     @staticmethod
@@ -426,7 +432,7 @@ class Shader(object):
             self.delete()
             return
 
-        self.vertexTangentAttrId = glGetAttribLocation(self.shaderId, 'tangent')
+        self.vertexTangentAttrId = glGetAttribLocation(self.shaderId, b'tangent')
 
         self.uniforms = None
         self.glUniforms = []
@@ -436,9 +442,9 @@ class Shader(object):
         if self.uniforms is None:
             parameterCount = glGetProgramiv(self.shaderId, GL_ACTIVE_UNIFORMS)
             self.uniforms = []
-            for index in xrange(parameterCount):
+            for index in range(parameterCount):
                 name, size, type = glGetActiveUniform(self.shaderId, index)
-                if name.startswith('gl_'):
+                if name.startswith(b'gl_'):
                     log.debug("Shader: adding built-in uniform %s", name)
                     self.glUniforms.append(name)
                     continue
@@ -464,7 +470,7 @@ class Shader(object):
             uniform.set(value)
 
         # Disable other texture units
-        for gl_tex_idx in xrange(GL_TEXTURE0 + SamplerUniform.currentSampler, 
+        for gl_tex_idx in range(GL_TEXTURE0 + SamplerUniform.currentSampler, 
                                  GL_TEXTURE0 + glmodule.MAX_TEXTURE_UNITS):
             glActiveTexture(gl_tex_idx)
             glBindTexture(GL_TEXTURE_2D, 0)
@@ -507,14 +513,14 @@ def getShader(path, defines=[], cache=None):
             try:
                 shader.initShader()
                 shader.modified = mtime
-            except RuntimeError, _:
+            except RuntimeError as _:
                 log.error("Error loading shader %s", cacheName, exc_info=True)
                 shader = False
     else:
         try:
             shader = Shader(path, defines)
             shader.modified = mtime
-        except RuntimeError, _:
+        except RuntimeError as _:
             log.error("Error loading shader %s", path, exc_info=True)
             shader = False
 
@@ -527,7 +533,7 @@ def reloadShaders():
         if _shaderCache[path]:
             try:
                 _shaderCache[path].initShader()
-            except RuntimeError, _:
+            except RuntimeError as _:
                 log.error("Error loading shader %s", path, exc_info=True)
                 _shaderCache[path] = False
         else:

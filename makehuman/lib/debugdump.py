@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """ 
@@ -42,7 +42,7 @@ import re
 import platform
 import string
 if sys.platform == 'win32':
-    import _winreg
+    import winreg
 import log
 import getpath
 
@@ -62,7 +62,7 @@ class DebugDump(object):
         self.debugpath = None
 
     def open(self):
-        from codecs import open
+        from io import open
         if self.debugpath is None:
             self.debugpath = getpath.getPath()
 
@@ -96,13 +96,11 @@ class DebugDump(object):
         self.write("BASEMESH VERSION: %s", os.environ['MH_MESH_VERSION'])
         self.write("IS BUILT (FROZEN): %s", os.environ['MH_FROZEN'])
         self.write("IS RELEASE VERSION: %s", os.environ['MH_RELEASE'])
-        self.write("DEFAULT ENCODING: %s", sys.getdefaultencoding())
-        self.write("FILESYSTEM ENCODING: %s", sys.getfilesystemencoding())
         self.write("WORKING DIRECTORY: %s", getpath.pathToUnicode(os.getcwd()))
         self.write("HOME LOCATION: %s", getpath.pathToUnicode(getpath.getHomePath()))
         syspath = os.path.pathsep.join( [getpath.pathToUnicode(p) for p in sys.path] )
         self.write("PYTHON PATH: %s", syspath)
-        self.write("DLL PATH: %s", getpath.pathToUnicode(os.environ['PATH']))
+        self.write("DLL PATH: %s", os.environ['PATH'])
         version = re.sub(r"[\r\n]"," ", sys.version)
         self.write("SYS.VERSION: %s", version)
         self.write("SYS.PLATFORM: %s", sys.platform)
@@ -112,13 +110,13 @@ class DebugDump(object):
         self.write("PLATFORM.UNAME.RELEASE: %s", platform.uname()[2])
 
         if sys.platform == 'linux2':
-            self.write("PLATFORM.LINUX_DISTRIBUTION: %s", string.join(platform.linux_distribution()," "))
+            self.write("PLATFORM.LINUX_DISTRIBUTION: %s", " ".join(platform.linux_distribution()))
             
         if sys.platform.startswith("darwin"):
-            self.write("PLATFORM.MAC_VER: %s", platform.mac_ver()[0])
+            self.write("PLATFORM.MAC_VER: %s", platform.mac_ver())[0]
             
         if sys.platform == 'win32':
-            self.write("PLATFORM.WIN32_VER: %s", string.join(platform.win32_ver()," "))
+            self.write("PLATFORM.WIN32_VER: %s", " ".join(platform.win32_ver()))
 
         import numpy
         self.write("NUMPY.VERSION: %s", numpy.__version__)
@@ -140,13 +138,13 @@ class DebugDump(object):
         self.write("PYQT.VERSION: %s", qtui.getQtVersionString())
         self.write("PYQT.JPG_SUPPORT: %s", "supported" if qtui.supportsJPG() else "not supported")
         self.write("PYQT.SVG_SUPPORT: %s", "supported" if qtui.supportsSVG() else "not supported")
-        py_plugin_path = os.path.pathsep.join( [getpath.pathToUnicode(p) for p in qtui.QtCore.QCoreApplication.libraryPaths()] )
+        py_plugin_path = os.path.pathsep.join( [getpath.pathToUnicode(str(p)) for p in qtui.QtCore.QCoreApplication.libraryPaths()] )
         self.write("QT.PLUGIN_PATH: %s" % py_plugin_path)
         qt_plugin_path_env = os.environ['QT_PLUGIN_PATH'] if 'QT_PLUGIN_PATH' in os.environ else ""
-        self.write("QT.PLUGIN_PATH_ENV: %s" % getpath.pathToUnicode(qt_plugin_path_env))
+        self.write("QT.PLUGIN_PATH_ENV: %s" % qt_plugin_path_env)
         qt_conf_present = os.path.isfile(getpath.getSysPath('qt.conf'))
         if qt_conf_present:
-            from codecs import open
+            from io import open
             f = open(getpath.getSysPath('qt.conf'), "r", encoding="utf-8", errors="replace")
             qt_conf_content = f.read()
             qt_conf_content = qt_conf_content.replace('\n', '\n'+(' '*len('QT.CONF: '))).strip()

@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -123,7 +123,7 @@ class Target(object):
         import makehuman
         data = []
         license = defaultTargetLicense()
-        with open(name, 'rU') as fd:
+        with open(name, 'rU', encoding = 'utf-8') as fd:
             for line in fd:
                 line = line.strip()
                 if line.startswith('#'):
@@ -153,12 +153,12 @@ class Target(object):
         lname = '%s.license' % bname
         if os.path.isfile(name) and Target.npztime < os.path.getmtime(name):
             log.message('compiled file newer than archive: %s', name)
-            raise RuntimeError('compiled file newer than archive: %s' % name)
+            raise RuntimeError('in _load_binary_archive compiled file newer than archive: %s' % name)
         if iname not in Target.npzfile:
-            log.message('compiled file missing: %s', iname)
+            log.message('in _load_binary_archive compiled iname file missing: %s', iname)
             raise RuntimeError('compiled file missing: %s' % iname)
         if vname not in Target.npzfile:
-            log.message('compiled file missing: %s', vname)
+            log.message('in _load_binary_archive compiled vname file missing: %s', vname)
             raise RuntimeError('compiled file missing: %s' % vname)
         self.verts = Target.npzfile[iname]
         self.data = Target.npzfile[vname] * 1e-3
@@ -186,15 +186,15 @@ class Target(object):
         if os.path.getmtime(vname) < os.path.getmtime(name):
             log.message('compiled file out of date: %s', vname)
             raise RuntimeError()
-        self.verts = np.load(iname)
-        self.data = np.load(vname) * 1e-3
+        self.verts = np.load(iname, encoding = 'ASCII')
+        self.data = np.load(vname, encoding = 'ASCII') * 1e-3
 
     def _load_binary(self, name):
         if Target.npzfile is None:
             try:
                 npzname = getSysDataPath('targets.npz')     # TODO duplicate path literal
                 Target.npzdir = os.path.dirname(npzname)
-                Target.npzfile = np.load(npzname)
+                Target.npzfile = np.load(npzname, encoding = 'ASCII')
                 Target.npztime = os.path.getmtime(npzname)
             except:
                 log.message('no compressed targets found')
@@ -223,7 +223,7 @@ class Target(object):
                 np.save(lname, license)
                 return iname, vname, lname
             return iname, vname, None
-        except StandardError, _:
+        except Exception as _:
             log.error('error saving %s', name)
 
     def _load(self, name):
@@ -231,7 +231,7 @@ class Target(object):
         logger.debug('loading target %s', name)
         try:
             self._load_binary(name)
-        except StandardError, _:
+        except Exception as _:
             self._load_text(name)
         logger.debug('loaded target %s', name)
 
@@ -452,8 +452,8 @@ def saveTranslationTarget(obj, targetPath, groupToSave=None, epsilon=0.001):
     nVertsExported = len(vertsToSave)
 
     try:
-        with open(targetPath, 'w') as fileDescriptor:
-            for i in xrange(nVertsExported):
+        with open(targetPath, 'w', encoding = 'utf-8') as fileDescriptor:
+            for i in range(nVertsExported):
                 fileDescriptor.write('%d %f %f %f\n' % (vertsToSave[i], delta[i,0], delta[i,1], delta[i,2]))
 
         if nVertsExported == 0:

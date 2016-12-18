@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -42,6 +42,7 @@ import numpy as np
 from core import G
 import getpath
 import log
+import files3d
 from collections import OrderedDict
 import makehuman
 
@@ -67,10 +68,13 @@ Unit3 = np.identity(3,float)
 
 class Proxy:
     def __init__(self, file, type, human):
-        log.debug("Loading proxy file: %s.", file)
+        if isinstance(file, bytes):
+            file = file.decode('utf-8')
+        log.debug("Initialize proxy file: %s.", file)
         import makehuman
-
         name = os.path.splitext(os.path.basename(file))[0]
+        if isinstance(name, bytes):
+            name = name.decode('utf-8')
         self.name = name.capitalize().replace(" ","_")
         self.license = makehuman.getAssetLicense()
         self.description = ""
@@ -158,11 +162,22 @@ class Proxy:
     def loadMeshAndObject(self, human):
         import files3d
         import guicommon
-
-        mesh = files3d.loadMesh(self.obj_file, maxFaces = self.max_pole)
+        import getpath
+        
+        import inspect  # temp code to log calling routines
+        log.debug("loadMeshAndObject called by: %s", inspect.stack()[1][3])
+        
+        name = self.obj_file
+        if isinstance(name, bytes):
+            name = name.decode('utf-8')
+                                  
+        name = getpath.getSysPath(name)
+        mesh = files3d.loadMesh(name, maxFaces = self.max_pole)
         if not mesh:
-            log.error("Failed to load %s", self.obj_file)
+            log.error("loadMeshAndObject failed to load %s", name)
+            log.error("The meshname is %s", name)
 
+        log.debug("Now the path has been extended to %s", name)
         mesh.priority = self.z_depth           # Set render order
         mesh.setCameraProjection(0)             # Set to model camera
 
@@ -201,13 +216,13 @@ class Proxy:
         self.vertWeights = {}
         if self.new_fitting:
             w = 1.0 / self.human.meshData.vertsPerPrimitive
-            for pxy_vIdx in xrange(self.ref_vIdxs.shape[0]):
+            for pxy_vIdx in range(self.ref_vIdxs.shape[0]):
                 _addProxyVertWeight(self.vertWeights, self.ref_vIdxs[pxy_vIdx, 0], pxy_vIdx, w)
                 _addProxyVertWeight(self.vertWeights, self.ref_vIdxs[pxy_vIdx, 1], pxy_vIdx, w)
                 _addProxyVertWeight(self.vertWeights, self.ref_vIdxs[pxy_vIdx, 2], pxy_vIdx, w)
                 _addProxyVertWeight(self.vertWeights, self.ref_vIdxs[pxy_vIdx, 3], pxy_vIdx, w)
         else:
-            for pxy_vIdx in xrange(self.ref_vIdxs.shape[0]):
+            for pxy_vIdx in range(self.ref_vIdxs.shape[0]):
                 _addProxyVertWeight(self.vertWeights, self.ref_vIdxs[pxy_vIdx, 0], pxy_vIdx, self.weights[pxy_vIdx, 0])
                 _addProxyVertWeight(self.vertWeights, self.ref_vIdxs[pxy_vIdx, 1], pxy_vIdx, self.weights[pxy_vIdx, 1])
                 _addProxyVertWeight(self.vertWeights, self.ref_vIdxs[pxy_vIdx, 2], pxy_vIdx, self.weights[pxy_vIdx, 2])
@@ -355,7 +370,7 @@ class Proxy:
         WEIGHT_THRESHOLD = 1e-4  # Threshold for including bone weight
         weights = OrderedDict()
 
-        for bname, (indxs, wghts) in humanWeights.data.items():
+        for bname, (indxs, wghts) in list(humanWeights.data.items()):
             vgroup = []
             empty = True
             for (v,wt) in zip(indxs, wghts):
@@ -399,7 +414,7 @@ def loadProxy(human, path, type="Clothes"):
                 try:
                     log.message('Compiling binary proxy file %s', npzpath)
                     saveBinaryProxy(proxy, npzpath)
-                except StandardError:
+                except Exception:
                     log.notice('unable to save compiled proxy: %s', npzpath, exc_info=True)
                     if os.path.isfile(npzpath):
                         # Remove file again, in case an empty file is left
@@ -416,7 +431,7 @@ def loadProxy(human, path, type="Clothes"):
     return proxy
 
 def loadTextProxy(human, filepath, type="Clothes"):
-    from codecs import open
+    from io import open
     try:
         fp = open(filepath, "rU", encoding="utf-8")
     except IOError:
@@ -628,7 +643,7 @@ def saveBinaryProxy(proxy, path):
     proxy.tmatrix.toNumpyStruct(vars_)
 
     special_poses = []
-    for posetype, posename in proxy.special_pose.items():
+    for posetype, posename in list(proxy.special_pose.items()):
         special_poses.append(posetype)
         special_poses.append(posename)
     specialposeStr, specialposeIdx = _packStringList(special_poses)
@@ -659,7 +674,7 @@ def saveBinaryProxy(proxy, path):
 def loadBinaryProxy(path, human, type):
     log.debug("Loading binary proxy %s.", path)
 
-    npzfile = np.load(path)
+    npzfile = np.load(path, encoding = 'ASCII')
     #if type is None:
     #    proxyType = npzfile['proxyType'].tostring()
     #else:
@@ -895,7 +910,7 @@ class TMatrix:
         """Deserialize TMatrix from npz file"""
         def _unpack_scales(scales, vidxs):
             scaleData = [None, None, None]
-            for i in xrange(3):
+            for i in range(3):
                 if i >= min(len(scales), len(vidxs)/2):
                     break
                 scale = scales[i]
@@ -906,7 +921,7 @@ class TMatrix:
 
         def _unpack_shears(shears, vidxs):
             shearData = [None, None, None]
-            for i in xrange(3):
+            for i in range(3):
                 if i >= min(len(scales)/2, len(vidxs)/2):
                     break
                 shear1, shear2 = shears[i*2], shears[i*2+1]
@@ -1083,7 +1098,7 @@ def peekMetadata(proxyFilePath, proxyType=None):
                     raise RuntimeError('compiled file out of date: %s', _npzpath)
 
             # Binary proxy file
-            npzfile = np.load(proxyFilePath)
+            npzfile = np.load(proxyFilePath, encoding = 'ASCII')
 
             uuid = npzfile['uuid'].tostring()
             tags = set(_unpackStringList(npzfile['tags_str'], npzfile['tags_idx']))
@@ -1093,7 +1108,7 @@ def peekMetadata(proxyFilePath, proxyType=None):
             log.warning("Problem loading metadata from binary proxy, trying ASCII file: %s", e, exc_info=showTrace)
 
     # ASCII proxy file
-    from codecs import open
+    from io import open
     fp = open(proxyFilePath, 'rU', encoding="utf-8")
     uuid = None
     tags = set()
@@ -1112,45 +1127,50 @@ def peekMetadata(proxyFilePath, proxyType=None):
 
 
 def _packStringList(strings):
-    text = ''
-    index = []
-    for string in strings:
-        index.append(len(text))
-        text += string
-    text = np.fromstring(text, dtype='S1')
-    index = np.array(index, dtype=np.uint32)
+#     text = ''
+#     index = []
+#     for string in strings:
+#         index.append(len(text))
+#         text += string
+#     text = np.fromstring(text, dtype='S1')
+#     index = np.array(index, dtype=np.uint32)
+# TODO remove above which unnecessarily duplicates files3d
+    text, index = files3d.packStringList(strings)
     return text, index
 
 def _unpackStringList(text, index):
-    strings = []
-    last = None
-    for i in index:
-        if last is not None:
-            name = text[last:i].tostring()
-            strings.append(name)
-        last = i
-    if last is not None:
-        name = text[last:].tostring()
-        strings.append(name)
-
+#     strings = []
+#     last = None
+#     for i in index:
+#         if last is not None:
+#             name = text[last:i].tostring()
+#             strings.append(name)
+#         last = i
+#     if last is not None:
+#         name = text[last:].tostring()
+#         strings.append(name)
+# TODO remove above which unnecessarily duplicates files3d
+    strings = files3d.unpackStringList(text, index)
     return strings
 
 def _getFilePath(filename, folder = None, altExtensions=None):
     import getpath
+    if isinstance(filename, bytes):
+        filename = filename.decode('utf=-8')
     if altExtensions is not None:
         # Search for existing path with alternative file extension
         for aExt in altExtensions:
             if aExt.startswith('.'):
                 aExt = aExt[1:]
-            aFile = os.path.splitext(filename)[0]+'.'+aExt
+            aFile = str(os.path.splitext(filename)[0])+'.'+aExt
             aPath = _getFilePath(aFile, folder, altExtensions=None)
             if os.path.isfile(aPath):
                 # Path found, return result with original extension
-                orgExt = os.path.splitext(filename)[1]
-                path = os.path.splitext(aPath)[0]+orgExt
+                orgExt = str(os.path.splitext(filename)[1])
+                path = str(os.path.splitext(aPath)[0])+orgExt
                 return getpath.formatPath(path)
 
-    if not filename or not isinstance(filename, basestring):
+    if not filename or not isinstance(filename, str):
         return filename
 
     searchPaths = []
