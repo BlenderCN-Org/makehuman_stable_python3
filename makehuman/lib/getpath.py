@@ -52,6 +52,11 @@ def _unique_list(l):
 
 PATH_ENCODINGS = _unique_list(map(lambda s:s.lower(), [sys.getfilesystemencoding(), sys.getdefaultencoding(), 'utf-8']))
 
+if not sys.stdout.encoding is None:
+    stdenc = sys.stdout.encoding.lower()
+    if not stdenc in PATH_ENCODINGS:
+        PATH_ENCODINGS.append(sys.stdout.encoding)
+
 def pathToUnicode(path):
     """
     Unicode representation of the filename.
