@@ -43,7 +43,7 @@ import os
 
 HG_REPO = "https://bitbucket.org/MakeHuman/makehuman"
 
-def sync(hgRoot, hgUrl=None)
+def sync(hgRoot, hgUrl=None):
     if not os.path.isdir(hgRoot):
         raise RuntimeError('Faulty hg root repository , folder does not exist (%s)' % hgRoot)
 
