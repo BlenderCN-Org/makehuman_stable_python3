@@ -49,7 +49,7 @@ bl_info = {
 
 
 if "bpy" in locals():
-    print("Reloading makeclothes v %d.%d.%d" % bl_info["version"])
+    print(("Reloading makeclothes v %d.%d.%d" % bl_info["version"]))
     import imp
     imp.reload(maketarget)
     imp.reload(mc)
@@ -57,7 +57,7 @@ if "bpy" in locals():
     imp.reload(makeclothes)
     imp.reload(project)
 else:
-    print("Loading makeclothes v %d.%d.%d" % bl_info["version"])
+    print(("Loading makeclothes v %d.%d.%d" % bl_info["version"]))
     import bpy
     import os
     from bpy.props import *
@@ -359,7 +359,7 @@ class OBJECT_OT_ExportMaterialButton(bpy.types.Operator):
         setObjectMode(context)
         try:
             matfile = materials.writeMaterial(context.object, context.scene.MhClothesDir)
-            print("Exported \"%s\"" % matfile)
+            print(("Exported \"%s\"" % matfile))
         except MHError:
             handleMHError(context)
         return{'FINISHED'}
@@ -384,7 +384,7 @@ class OBJECT_OT_CopyVertLocsButton(bpy.types.Operator):
         src = context.object
         for trg in context.scene.objects:
             if trg != src and trg.select and trg.type == 'MESH':
-                print("Copy vertex locations from %s to %s" % (src.name, trg.name))
+                print(("Copy vertex locations from %s to %s" % (src.name, trg.name)))
                 for n,sv in enumerate(src.data.vertices):
                     tv = trg.data.vertices[n]
                     tv.co = sv.co
@@ -451,7 +451,7 @@ class OBJECT_OT_MakeHumanButton(bpy.types.Operator):
                         )
             else:
                 ob.MhHuman = False
-            print("Object %s: Human = %s" % (ob.name, ob.MhHuman))
+            print(("Object %s: Human = %s" % (ob.name, ob.MhHuman)))
         except MHError:
             handleMHError(context)
         return{'FINISHED'}

@@ -37,9 +37,10 @@ Abstract
 This file starts the MakeHuman python application.
 """
 
-from __future__ import absolute_import  # Fix 'from . import x' statements on python 2.6
+  # Fix 'from . import x' statements on python 2.6
 import sys
-reload(sys)
+import imp
+imp.reload(sys)
 sys.setdefaultencoding('utf-8')
 
 import os
@@ -125,7 +126,7 @@ def getBasemeshVersion():
     """
     return meshVersion
 
-def unicode(msg, *args, **kwargs):
+def str(msg, *args, **kwargs):
     """
     Override default unicode constructor to try and resolve some issues with
     mismatched string codecs.
@@ -133,29 +134,29 @@ def unicode(msg, *args, **kwargs):
     """
     try:
         # First attempt the builtin unicode() function without interference
-        return __builtins__.unicode(msg, *args, **kwargs)
+        return __builtins__.str(msg, *args, **kwargs)
     except:
         pass
     try:
         # In case msg is an exception, attempt to decode its message
-        return unicode(msg.message)
+        return str(msg.message)
     except:
         pass
     try:
         # Try decoding as utf-8 bytestring
-        return __builtins__.unicode(msg, encoding="utf-8")
+        return __builtins__.str(msg, encoding="utf-8")
     except:
         pass
     try:
         # Try guessing system default encoding and decode as such
         import locale
-        return __builtins__.unicode(msg, encoding=locale.getpreferredencoding())
+        return __builtins__.str(msg, encoding=locale.getpreferredencoding())
     except:
         pass
     try:
         # Attempt using filesystem encoding
         import sys
-        return __builtins__.unicode(msg, encoding=sys.getfilesystemencoding())
+        return __builtins__.str(msg, encoding=sys.getfilesystemencoding())
     except:
         pass
     try:
@@ -163,7 +164,7 @@ def unicode(msg, *args, **kwargs):
         return str(msg).decode("utf-8", errors="replace")
     except:
         pass
-    return u"unable to encode message"
+    return "unable to encode message"
 
 def getCwd():
     """
@@ -274,7 +275,7 @@ def get_hg_revision_1():
             os.environ['HGBRANCH'] = hgrev[2]
         return hgrev
     except Exception as e:
-        print >> sys.stderr,  u"NOTICE: Failed to get hg version number from command line: " + format(unicode(e)) + u" (This is just a head's up, not a critical error)"
+        print("NOTICE: Failed to get hg version number from command line: " + format(str(e)) + " (This is just a head's up, not a critical error)", file=sys.stderr)
 
     try:
         hgrev = get_revision_hglib()
@@ -285,7 +286,7 @@ def get_hg_revision_1():
             os.environ['HGBRANCH'] = hgrev[2]
         return hgrev
     except Exception as e:
-        print >> sys.stderr,  u"NOTICE: Failed to get hg version number using hglib: " + format(unicode(e)) + u" (This is just a head's up, not a critical error)"
+        print("NOTICE: Failed to get hg version number using hglib: " + format(str(e)) + " (This is just a head's up, not a critical error)", file=sys.stderr)
 
     try:
         hgrev = get_revision_dirstate_parent()
@@ -294,7 +295,7 @@ def get_hg_revision_1():
         os.environ['HGNODEID'] = str(hgrev[1])
         return hgrev
     except Exception as e:
-        print >> sys.stderr,  u"NOTICE: Failed to get hg parent version from dirstate file: " + format(unicode(e)) + u" (This is just a head's up, not a critical error)"
+        print("NOTICE: Failed to get hg parent version from dirstate file: " + format(str(e)) + " (This is just a head's up, not a critical error)", file=sys.stderr)
 
     try:
         hgrev = get_revision_cache_tip()
@@ -303,7 +304,7 @@ def get_hg_revision_1():
         os.environ['HGNODEID'] = str(hgrev[1])
         return hgrev
     except Exception as e:
-        print >> sys.stderr,  u"NOTICE: Failed to get hg tip version from cache file: " + format(unicode(e)) + u" (This is just a head's up, not a critical error)"
+        print("NOTICE: Failed to get hg tip version from cache file: " + format(str(e)) + " (This is just a head's up, not a critical error)", file=sys.stderr)
 
     #TODO Disabled this fallback for now, it's possible to do this using the hg keyword extension, but not recommended and this metric was never really reliable (it only caused more confusion)
     '''
@@ -333,15 +334,15 @@ def get_hg_revision():
     versionFile = getpath.getSysDataPath("VERSION")
     if os.path.exists(versionFile):
         version_ = open(versionFile).read().strip()
-        print >> sys.stderr,  u"data/VERSION file detected using value from version file: %s" % version_
+        print("data/VERSION file detected using value from version file: %s" % version_, file=sys.stderr)
         os.environ['HGREVISION'] = str(version_.split(':')[0])
         os.environ['HGNODEID'] = str(version_.split(':')[1])
         os.environ['HGREVISION_SOURCE'] = "data/VERSION static revision data"
     elif not isBuild():
-        print >> sys.stderr,  u"NO VERSION file detected, retrieving revision info from HG"
+        print("NO VERSION file detected, retrieving revision info from HG", file=sys.stderr)
         # Set HG rev in environment so it can be used elsewhere
         hgrev = get_hg_revision_1()
-        print >> sys.stderr,  u"Detected HG revision: r%s (%s)" % (hgrev[0], hgrev[1])
+        print("Detected HG revision: r%s (%s)" % (hgrev[0], hgrev[1]), file=sys.stderr)
     else:
         # Don't bother trying to retrieve HG info for a build release, there should be a data/VERSION file
         os.environ['HGREVISION'] = ""
@@ -417,7 +418,7 @@ def debug_dump():
         import debugdump
         debugdump.dump.reset()
     except debugdump.DependencyError as e:
-        print >> sys.stderr,  u"Dependency error: " + format(unicode(e))
+        print("Dependency error: " + format(str(e)), file=sys.stderr)
         import log
         log.error("Dependency error: %s", e)
         sys.exit(-1)
@@ -450,7 +451,7 @@ def parse_arguments():
     argOptions = vars(parser.parse_args())
 
     if argOptions.get('license', False):
-        print "\n" + getCopyrightMessage() + "\n"
+        print("\n" + getCopyrightMessage() + "\n")
         sys.exit(0)
 
     return argOptions
@@ -575,7 +576,7 @@ Homepage: %s""" % (self.author, self.license, self.copyright, self.homepage)
         return dict( [(pname, getattr(self, pname)) for pname in self._keys] )
 
     def fromDict(self, propDict):
-        for prop,val in propDict.items():
+        for prop,val in list(propDict.items()):
             self.setProperty(prop, val)
         return self
 
@@ -613,7 +614,7 @@ Homepage: %s""" % (self.author, self.license, self.copyright, self.homepage)
             import numpy as np
             text = ''
             index = []
-            for key,value in stringDict.items():
+            for key,value in list(stringDict.items()):
                 index.append(len(key))
                 index.append(len(value))
                 text += key + value
@@ -766,7 +767,7 @@ makes use of.\n"""
                         ]
     external_licenses = OrderedDict(external_licenses)
 
-    for name, (lic_file, url, lic_type) in external_licenses.items():
+    for name, (lic_file, url, lic_type) in list(external_licenses.items()):
         result += _title(name, url, lic_type)
 
         lfile = os.path.join(license_folder, lic_file)
@@ -783,7 +784,7 @@ makes use of.\n"""
 
 
 def main():
-    print getCopyrightMessage(short=True) + "\n"
+    print(getCopyrightMessage(short=True) + "\n")
     
     
     try:
@@ -800,10 +801,10 @@ def main():
         os.environ['MH_MESH_VERSION'] = getBasemeshVersion()
         init_logging()
     except Exception as e:
-        print >> sys.stderr,  "error: " + format(unicode(e))
+        print("error: " + format(str(e)), file=sys.stderr)
         import traceback
         bt = traceback.format_exc()
-        print >> sys.stderr, bt
+        print(bt, file=sys.stderr)
         return
 
     # Pass release info to debug dump using environment variables

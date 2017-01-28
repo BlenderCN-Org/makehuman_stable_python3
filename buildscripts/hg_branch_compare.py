@@ -68,7 +68,7 @@ def compare(sourceBranch="default", targetBranch="stable"):
                 if len(Ls[0]) > 12:
                     Ls[0] = Ls[0][:12]
                 excludes.append(Ls[0])
-        print 'Loaded %s exclusions from %s\n' % (len(excludes), excludeFile)
+        print('Loaded %s exclusions from %s\n' % (len(excludes), excludeFile))
 
     try:
         # Try if cwd is buildscripts/ folder
@@ -133,16 +133,16 @@ if __name__ == '__main__':
 
     if args.get('graft', False):
         import subprocess
-        print 'To graft %s changesets from %s to %s, execute:' % (len(result), sourceBranch, targetBranch)
-        print 'hg update %s' % targetBranch
+        print('To graft %s changesets from %s to %s, execute:' % (len(result), sourceBranch, targetBranch))
+        print('hg update %s' % targetBranch)
         revs = [r.node for r in result]
         dargs = [item for pair in zip(len(revs)*['-D'], revs) for item in pair]
-        print 'hg graft %s' % " ".join(dargs)
+        print('hg graft %s' % " ".join(dargs))
 
-        print "\n\nSummary:\n--------\n"
+        print("\n\nSummary:\n--------\n")
 
-    print "Found %s candidates to graft:\n" % len(result)
+    print("Found %s candidates to graft:\n" % len(result))
     for r in result:
-        print formatChangeset(r)
-        print '\n'
+        print(formatChangeset(r))
+        print('\n')
 
