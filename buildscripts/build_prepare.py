@@ -239,7 +239,7 @@ class MHAppExporter(object):
 
         # If RELEASE status or version-sub was set in config, update it in exported mh source file
         if (self.IS_RELEASE is not None) or (self.VERSION_SUB is not None) :
-            f = open(self.targetFile('makehuman/makehuman.py'), 'rb')
+            f = open(self.targetFile('makehuman/makehuman.py'), 'r')
             release_replaced = False
             versionsub_replaced = False
             lines = []

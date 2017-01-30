@@ -41,7 +41,7 @@ Quickly retrieve values from the build_prepare.out file from commandline.
 import sys
 
 def parse(filepath, variable):
-    f = open(filepath, 'rb')
+    f = open(filepath, 'r')
     for line in f:
         if line.startswith('  '):
             tokens = [t.strip() for t in line.split(':')]

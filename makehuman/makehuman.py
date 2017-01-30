@@ -41,7 +41,7 @@ This file starts the MakeHuman python application.
 import sys
 import imp
 imp.reload(sys)
-sys.setdefaultencoding('utf-8')
+# sys.setdefaultencoding('utf-8')
 
 import os
 import re
@@ -198,7 +198,7 @@ def get_revision_dirstate_parent(folder=None):
     # First fallback: try to parse the dirstate file in .hg manually
     import binascii
 
-    dirstatefile = open(getHgRoot('.hg/dirstate'), 'rb')
+    dirstatefile = open(getHgRoot('.hg/dirstate'), 'r')
     st = dirstatefile.read(40)
     dirstatefile.close()
     l = len(st)
@@ -210,7 +210,7 @@ def get_revision_dirstate_parent(folder=None):
 
     # Build mapping of nodeid to local revision number
     node_rev_map = dict()
-    revlogfile = open(getHgRoot('.hg/store/00changelog.i'), 'rb')
+    revlogfile = open(getHgRoot('.hg/store/00changelog.i'), 'r')
     st = revlogfile.read(32)
 
     rev_idx = 0
