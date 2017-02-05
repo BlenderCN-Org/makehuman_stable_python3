@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -126,6 +126,8 @@ class ClothesTaskView(proxychooser.ProxyChooserTaskView):
 
         for pxy in stackedProxies:
             obj = pxy.object
+            if isinstance(obj.name, bytes):
+                obj.name = obj.name.decode('utf-8')
 
             # Remap vertices from basemesh to proxy verts
             proxyVertMask = proxy.transferVertexMaskToProxy(vertsMask, pxy)
@@ -193,7 +195,7 @@ class ClothesTaskView(proxychooser.ProxyChooserTaskView):
             self.oldPxyMats = dict()
             xray_mat = material.fromFile(getpath.getSysDataPath('materials/xray.mhmat'))
             for pxy in self.human.getProxies(includeHumanProxy=False):
-                print pxy.type
+                print(pxy.type)
                 if pxy.type == 'Eyes':
                     # Don't X-ray the eyes, it looks weird
                     continue

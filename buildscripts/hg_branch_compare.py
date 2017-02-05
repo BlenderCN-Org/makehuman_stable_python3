@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -59,7 +59,7 @@ def compare(sourceBranch="default", targetBranch="stable"):
         excludeFile = 'buildscripts/graft_exclude.conf'
 
     if excludeFile:
-        for L in open(excludeFile, 'r'):
+        for L in open(excludeFile, 'rU'):
             L = L.strip()
             if L:
                 if L.startswith('#'):

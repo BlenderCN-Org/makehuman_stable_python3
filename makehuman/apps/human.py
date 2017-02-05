@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -230,6 +230,16 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         mesh = self.meshData
         group_mask = np.ones(len(mesh._faceGroups), dtype=bool)
         for g in mesh._faceGroups:
+            """
+            Make sure we are using strings not bytes here. There may be better approach when
+            The code has been entirely upgraded to Phython 3, but legacy gets us here with bytes somethimes
+            and strings other times.
+            Running compile_models.py seems to get here with strings.
+            Running makehuman.py seems to get here with bytes  
+            TODO:  Assure we always get here with strings NOT bytes
+            """
+            if(type(g.name) is bytes):
+                g.name = g.name.decode('utf-8')
             if g.name.startswith('joint-') or g.name.startswith('helper-'):
                 group_mask[g.idx] = False
         face_mask = group_mask[mesh.group]
@@ -257,7 +267,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         """
         import warpmodifier
         log.debug("human.targetsDetailStack:")
-        for path,value in self.targetsDetailStack.items():
+        for path,value in list(self.targetsDetailStack.items()):
             try:
                 target = algos3d._targetBuffer[canonicalPath(path)]
             except KeyError:
@@ -280,7 +290,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         """
         import warpmodifier
         log.debug("algos3d.targetBuffer:")
-        for path,target in algos3d._targetBuffer.items():
+        for path,target in list(algos3d._targetBuffer.items()):
             if isinstance(target, warpmodifier.WarpTarget):
                 stars = " *** "
             else:
@@ -325,7 +335,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
                 proxies.append(pxy)
         if includeHumanProxy and self.proxy:
             proxies.append(self.proxy)
-        for pxy in self._clothesProxies.values():
+        for pxy in list(self._clothesProxies.values()):
             proxies.append(pxy)
         return proxies
 
@@ -874,14 +884,14 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         """
         All modifier objects attached to this human.
         """
-        return self._modifiers.values()
+        return list(self._modifiers.values())
 
     @property
     def modifierNames(self):
         """
         The names of all modifiers available.
         """
-        return self._modifiers.keys()
+        return list(self._modifiers.keys())
 
     def getModifierNames(self):
         """
@@ -902,7 +912,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         The names of all groups in which the modifiers of this human are
         classified.
         """
-        return self._modifier_groups.keys()
+        return list(self._modifier_groups.keys())
 
     def getModifiersByGroup(self, groupName):
         """
@@ -1027,7 +1037,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
                 # Update dependency map
                 reverseMapping = dict()
-                for k,v in self._modifier_varMapping.items():
+                for k,v in list(self._modifier_varMapping.items()):
                     if v not in reverseMapping:
                         reverseMapping[v] = []
                     reverseMapping[v].append(k)
@@ -1098,7 +1108,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
         # Apply targets to seedmesh coordinates
         itprog = Progress(len(self.targetsDetailStack))
-        for (targetPath, morphFactor) in self.targetsDetailStack.iteritems():
+        for (targetPath, morphFactor) in self.targetsDetailStack.items():
             algos3d.loadTranslationTarget(self.meshData, targetPath, morphFactor, None, 0, 0)
             itprog.step()
 
@@ -1416,7 +1426,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.callEvent('onChanged', event)
 
     def load(self, filename, update=True, strict=False):
-        from codecs import open
+        from io import open
 
         def _get_version(lineData):
             try:
@@ -1443,13 +1453,13 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
         f = open(filename, 'rU', encoding="utf-8")
 
-        for lh in G.app.loadHandlers.values():
+        for lh in list(G.app.loadHandlers.values()):
             try:
                 lh(self, ['status', 'started'], strict)
             except:
                 if strict:
                     e = sys.exc_info()
-                    raise e[0], e[1], e[2]
+                    raise e[0](e[1]).with_traceback(e[2])
                 else:
                     log.warning("Exception while starting MHM loading.", exc_info=True)
 
@@ -1461,7 +1471,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
             except:
                 if strict:
                     e = sys.exc_info()
-                    raise e[0], e[1], e[2]
+                    raise e[0](e[1]).with_traceback(e[2])
                 else:
                     log.warning("Exception while loading MHM property.", exc_info=True)
 
@@ -1478,8 +1488,8 @@ class Human(guicommon.Object, animation.AnimatedMesh):
                     except KeyError:
                         log.warning('Unknown modifier specified in MHM file: %s', lineData[1])
                 elif lineData[0] == 'camera':
-                    rot = map(float, lineData[1:3]) + [0.0]
-                    trans = map(float, lineData[3:6])
+                    rot = list(map(float, lineData[1:3])) + [0.0]
+                    trans = list(map(float, lineData[3:6]))
                     zoom = float(lineData[6])
                     G.app.modelCamera.setRotation(rot)
                     G.app.modelCamera.translation[:3] = trans[:3]
@@ -1513,7 +1523,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
             except:
                 if strict:
                     e = sys.exc_info()
-                    raise e[0], e[1], e[2]
+                    raise e[0](e[1]).with_traceback(e[2])
                 else:
                     log.warning("Exception while finishing MHM loading.", exc_info=True)
         f.close()
@@ -1537,7 +1547,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         log.message("Done loading MHM file.")
 
     def save(self, filename, tags):
-        from codecs import open
+        from io import open
         from progress import Progress
         progress = Progress(len(G.app.saveHandlers))
         event = events3d.HumanEvent(self, 'save')

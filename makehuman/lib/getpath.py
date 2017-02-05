@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -38,19 +38,8 @@ Utility module for finding the user home path.
 
 import sys
 import os
-from core import G
 
 __home_path = None
-
-def _unique_list(l):
-    """
-    Create a list that maintains order of original list, but with duplicates
-    removed. First occurrence of each duplicate is used as its position.
-    """
-    seen = set()
-    return [x for x in l if not (x in seen or seen.add(x))]
-
-PATH_ENCODINGS = _unique_list(map(lambda s:s.lower(), [sys.getfilesystemencoding(), sys.getdefaultencoding(), 'utf-8']))
 
 def pathToUnicode(path):
     """
@@ -62,50 +51,18 @@ def pathToUnicode(path):
     """
     if path is None:
         return path
+    elif isinstance(path, str):
+        return path
     else:
         # Approach for basestring type, as well as others such as QString
-        return stringToUnicode(path, PATH_ENCODINGS)
-
-def stringToUnicode(string_, encodings):
-    """
-    Decode a string to a unicode representation. Attempts to use the encodings
-    in the order in which they are specified. Implements fallback when no
-    encoding is valid.
-    """
-    if isinstance(string_, unicode):
-        # Is already unicode
-        return string_
-
-    for encoding in encodings:
         try:
-            result = unicode(string_, encoding, 'strict')
+            return str(path, sys.getfilesystemencoding(), 'strict')
         except UnicodeDecodeError:
-            pass
-        except TypeError:
-            # "decoding Unicode is not supported"
-            break
-
-    try:
-        str_ = unicode(string_, 'utf-8', 'strict')
-        for encoding in encodings:
             try:
-                return str_.decode(encoding, 'strict')
+                path = str(path, 'utf-8', 'strict')
+                return path.decode(sys.getfilesystemencoding(), 'strict')
             except UnicodeDecodeError:
-                pass
-    except UnicodeDecodeError:
-        pass
-    except TypeError:
-        # "decoding Unicode is not supported"
-        pass
-
-    # Last-resort fallback
-    fallback = unicode(string_, 'ascii', 'replace')
-    import log
-    try:
-        log.warning('Failed to decode string "%s" to unicode (encodings tried: %s). Using fallback value: %s', string_, ', '.join(encodings), fallback)
-    except:
-        log.warning("Failed to decode string to unicode (encodings tried: %s). Using fallback value: %s", ', '.join(encodings), fallback)
-    return fallback
+                return str(path, 'ascii', 'replace')
 
 def formatPath(path):
     if path is None:
@@ -135,26 +92,20 @@ def getHomePath():
     """
     # Cache the home path
     global __home_path
-    
-    if G.args.get("home_location") is not None:
-        __home_path = formatPath(G.args.get("home_location"))
-        if os.path.isdir(__home_path) is False:
-            raise RuntimeError("Invalid path in command line option")
-            
     if __home_path is not None:
         return __home_path
 
     # Windows
     if sys.platform == 'win32':
-        import _winreg
+        import winreg
         keyname = r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
         #name = 'Personal'
-        k = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, keyname)
-        value, type_ = _winreg.QueryValueEx(k, 'Personal')
-        if type_ == _winreg.REG_EXPAND_SZ:
-            __home_path = formatPath(_winreg.ExpandEnvironmentStrings(value))
+        k = winreg.OpenKey(winreg.HKEY_CURRENT_USER, keyname)
+        value, type_ = winreg.QueryValueEx(k, 'Personal')
+        if type_ == winreg.REG_EXPAND_SZ:
+            __home_path = formatPath(winreg.ExpandEnvironmentStrings(value))
             return __home_path
-        elif type_ == _winreg.REG_SZ:
+        elif type_ == winreg.REG_SZ:
             __home_path = formatPath(value)
             return __home_path
         else:
@@ -238,7 +189,7 @@ def commonprefix(paths, sep='/'):
     """
     from itertools import takewhile
 
-    bydirectorylevels = zip(*[p.split(sep) for p in paths])
+    bydirectorylevels = list(zip(*[p.split(sep) for p in paths]))
     return sep.join(x[0] for x in takewhile(_allnamesequal, bydirectorylevels))
 
 def isSubPath(subpath, path):
@@ -337,9 +288,9 @@ def search(paths, extensions, recursive=True, mutexExtensions=False):
     will be returned. Instead, only the file with highest extension precedence 
     (extensions occurs earlier in the extensions list) is kept.
     """
-    if isinstance(paths, basestring):
+    if isinstance(paths, str):
         paths = [paths]
-    if isinstance(extensions, basestring):
+    if isinstance(extensions, str):
         extensions = [extensions]
     extensions = [e[1:].lower() if e.startswith('.') else e.lower() for e in extensions]
 
@@ -379,7 +330,7 @@ def search(paths, extensions, recursive=True, mutexExtensions=False):
                             yield pathToUnicode( f )
 
     if mutexExtensions:
-        for f in ["%s.%s" % (p,e) for p,e in discovered.items()]:
+        for f in ["%s.%s" % (p,e) for p,e in list(discovered.items())]:
             yield pathToUnicode( f )
 
 def getJailedPath(filepath, relativeTo, jailLimits=[getDataPath(), getSysDataPath()]):

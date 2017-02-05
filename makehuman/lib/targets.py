@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -65,7 +65,10 @@ _categories = [cat for cat, value in _cat_data]
 _value_cat = dict([(value, cat)
                    for cat, values in _cat_data
                    for value in values])
-del cat, value, values
+
+# Not sure whether these were even in scope in first place??
+# Removing delete fixes some 0_Modeling plugin loads
+#del cat, value, values
 
 
 class Component(object):
@@ -102,7 +105,7 @@ class Component(object):
         """
         The variables that apply to this target component.
         """
-        return [value for key,value in self.data.items() if value != None]
+        return [value for key,value in list(self.data.items()) if value != None]
 
     def set_data(self, category, value):
         orig = self.data.get(category)
@@ -254,7 +257,7 @@ class ZippedTargetsCrawler(TargetsCrawler):
 
         self.npzPath = os.path.join(dataPath, npzFile)
         if not os.path.isfile(self.npzPath):
-            raise StandardError('Could not load load targets from npz archive. Archive file %s not found.', self.npzPath)
+            raise Exception('Could not load load targets from npz archive. Archive file %s not found.', self.npzPath)
         self._files = None
 
     def lookupPath(self, realPath):
@@ -277,13 +280,13 @@ class ZippedTargetsCrawler(TargetsCrawler):
         path = self.lookupPath(realPath)
         if self._files is None:
             self.buildTree()
-        return self.namei(path).keys()
+        return list(self.namei(path).keys())
 
     def real_path(self, path):
         return os.path.join(self.dataPath, path).replace('\\', '/')
 
     def namei(self, path):
-        if isinstance(path, basestring):
+        if isinstance(path, str):
             if not path:
                 path = []
             elif path == '.':
@@ -317,7 +320,7 @@ class ZippedTargetsCrawler(TargetsCrawler):
                 add_file(dir[head], tail)
 
         # Add targets in npz archive to file list
-        with zipfile.ZipFile(self.npzPath, 'r') as npzfile:
+        with zipfile.ZipFile(self.npzPath, 'rU') as npzfile:
             for file_ in npzfile.infolist():
                 name = file_.filename
                 if not name.endswith('.index.npy'):
@@ -327,7 +330,7 @@ class ZippedTargetsCrawler(TargetsCrawler):
                 add_file(self._files, path)
 
         # Walk file path (not .npz archive) to find images to add to file list
-        from codecs import open
+        from io import open
         with open(os.path.join(self.dataPath, 'images.list'), 'rU', encoding="utf-8") as imgfile:
             for line in imgfile:
                 name = line.rstrip()
@@ -340,7 +343,7 @@ class ZippedTargetsCrawler(TargetsCrawler):
         def _debug_print(root, pre=''):
                 if not root:
                     return
-                for (key, vals) in root.items():
+                for (key, vals) in list(root.items()):
                     log.debug( pre+"%s" % key )
                     _debug_print(vals, pre+'    ')
         #_debug_print(self._files)
@@ -357,13 +360,13 @@ class Targets(object):
         """
         Debug print all group keys for the targets stored in groups.
         """
-        log.debug("Targets keys:\n%s", "\n".join(["-".join(k) for k in self.groups.keys()]))
+        log.debug("Targets keys:\n%s", "\n".join(["-".join(k) for k in list(self.groups.keys())]))
 
     def debugTargets(self, showData = False):
         """
         Elaborately print all targets stored in this collection.
         """
-        for groupKey, targets in self.groups.items():
+        for groupKey, targets in list(self.groups.items()):
             groupKeyStr = "-".join(groupKey)
             log.debug("\n========== Group: %s ===============\n", groupKeyStr)
             for targetComponent in targets:
@@ -371,19 +374,19 @@ class Targets(object):
                 if showData:
                     log.debug("             data: %s", targetComponent.data)
                 dependsOn = dict([(varName, value) 
-                            for (varName, value) in targetComponent.data.items()
+                            for (varName, value) in list(targetComponent.data.items())
                             if value is not None])
                 log.debug("             depends on variables: %s", dependsOn)
 
     def getTargetsByGroup(self, group):
-        if isinstance(group, basestring):
+        if isinstance(group, str):
             group = tuple(group.split('-'))
         elif not isinstance(group, tuple):
             group = tuple(group)
         return self.groups[group]
 
     def findTargets(self, partialGroup):
-        if isinstance(partialGroup, basestring):
+        if isinstance(partialGroup, str):
             partialGroup = tuple(partialGroup.split('-'))
         elif not isinstance(partialGroup, tuple):
             partialGroup = tuple(partialGroup)
@@ -405,7 +408,7 @@ class Targets(object):
             targetFinder = ZippedTargetsCrawler(dataPath, 'targets.npz')
             targetFinder.findTargets()
             log.debug("%s targets loaded from NPZ file succesfully.", len(targetFinder.targets))
-        except StandardError as e:
+        except Exception as e:
             # Load targets from .target files
             log.debug("Could not load targets from NPZ, loading individual files from %s (Error message: %s)", dataPath, e, exc_info=False)
 

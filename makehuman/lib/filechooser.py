@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -75,8 +75,8 @@ class ThumbnailCache(object):
         pwidth = pixmap.width()
         pheight = pixmap.height()
         if pwidth > width or pheight > height:
-            x0 = max(0, (pwidth - width) / 2)
-            y0 = max(0, (pheight - height) / 2)
+            x0 = max(0, (pwidth - width) // 2)
+            y0 = max(0, (pheight - height) // 2)
             pixmap = pixmap.copy(x0, y0, width, height)
         return pixmap
 
@@ -214,7 +214,7 @@ class FileSort(Sorter):
         Override Sorter.getFields to append the MetaFields at the result.
         """
 
-        return super(FileSort, self).fields() + self.metaFields
+        return list(super(FileSort, self).fields())  + self.metaFields
 
     def getMethod(self, field):
         """
@@ -278,6 +278,8 @@ class TagFilter(gui.GroupBox):
             self.addTag(tag)
 
     def addTag(self, tag):
+        if type(tag) is bytes:
+            tag = tag.decode('utf-8')
         tag = tag.lower()
         if tag in self.tags:
             return
@@ -428,7 +430,7 @@ class FileChooserBase(QtGui.QWidget, gui.Widget):
         gui.Widget.__init__(self)
 
         self.setPaths(path)
-        if isinstance(extensions, basestring):
+        if isinstance(extensions, str):
             self.extensions = [extensions]
         else:
             self.extensions = extensions
@@ -495,7 +497,7 @@ class FileChooserBase(QtGui.QWidget, gui.Widget):
                               mutexExtensions = self.mutexExtensions)
 
     def clearList(self):
-        for i in xrange(self.children.count()):
+        for i in range(self.children.count()):
             child = self.children.itemAt(0)
             self._removeListItem(child)
 

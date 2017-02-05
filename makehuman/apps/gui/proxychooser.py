@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -95,6 +95,10 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
     def __init__(self, category, proxyName, tabLabel = None, multiProxy = False, tagFilter = False, descriptionWidget = False):
         if not tabLabel:
             tabLabel = proxyName.capitalize()
+        if isinstance(tabLabel, bytes):
+            tabLabel = tabLabel.decode('utf-8')            
+        if isinstance(proxyName, bytes):
+            proxyName = proxyName.decode('utf-8')
         proxyName = proxyName.lower().replace(" ", "_")
         self.proxyName = proxyName
         gui3d.TaskView.__init__(self, category, tabLabel)
@@ -107,6 +111,8 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
 
         self.homeProxyDir = getpath.getPath(os.path.join('data', proxyName))
         self.sysProxyDir = mh.getSysDataPath(proxyName)
+        log.debug("ProxyChooserTaskView homeProxyDir: %s", self.homeProxyDir)
+        log.debug("ProxyChooserTaskView sysProxyDir: %s", self.sysProxyDir)
 
         if not os.path.exists(self.homeProxyDir):
             os.makedirs(self.homeProxyDir)
@@ -143,7 +149,7 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
 
         self.filechooser.setIconSize(50,50)
         self.filechooser.enableAutoRefresh(False)
-        if not isinstance(self.getFileExtension(), basestring) and \
+        if not isinstance(self.getFileExtension(), str) and \
            len(self.getFileExtension()) > 1:
             self.filechooser.mutexExtensions = True
         #self.addLeftWidget(self.filechooser.createSortBox())
@@ -160,6 +166,7 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
 
         @self.filechooser.mhEvent
         def onFileSelected(filename):
+            log.debug("proxyChooser.filechoose.mhevent selected: %s", filename)
             self.proxyFileSelected(filename)
 
         if self.multiProxy:
@@ -223,6 +230,8 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
         Called when user selects a file from the filechooser widget.
         Creates an action that invokes selectProxy().
         """
+        if isinstance(filename, bytes):
+            filename.decode('utf-8')
         if self.multiProxy:
             action = MultiProxyAction("Change %s" % self.proxyName,
                                       self,
@@ -246,6 +255,8 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
         This method only has effect when this library allows multiple proxy
         selection.
         """
+        if isinstance(filename, bytes):
+            filename.decode('utf-8')        
         if not self.multiProxy:
             return
 
@@ -614,7 +625,7 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
         return self._proxyFilePerUuid[uuid]
 
     def _loadUuidLookup(self):
-        items = [ (values[1], path) for (path, values) in self._filecache.items() ]
+        items = [ (values[1], path) for (path, values) in list(self._filecache.items()) ]
         self._proxyFilePerUuid = dict()
         for (_uuid, path) in items:
             if _uuid in self._proxyFilePerUuid and self._proxyFilePerUuid[_uuid] != path:

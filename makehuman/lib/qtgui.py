@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -124,7 +124,7 @@ class TabsBase(Widget):
         if idx != None:
             # Update index list when inserting tabs at arbitrary positions
             newIdxList = {}
-            for tIdx, t in self._tabs_by_idx.items():
+            for tIdx, t in list(self._tabs_by_idx.items()):
                 if int(tIdx) >= idx:
                     t.idx += 1
                 newIdxList[t.idx] = t
@@ -197,12 +197,14 @@ class TabBar(QtGui.QTabBar, TabsBase):
 class GroupBox(QtGui.QGroupBox, Widget):
     def __init__(self, label = ''):
         label = getLanguageString(label) if label else ''
+        if type(label) is bytes:
+            label = label.decode("utf-8")
         QtGui.QGroupBox.__init__(self, label)
         Widget.__init__(self)
         self.layout = QtGui.QGridLayout(self)
 
     def __str__(self):
-        return "%s - %s" % (type(self), unicode(self.title()))
+        return "%s - %s" % (type(self), str(self.title()))
 
     def addWidget(self, widget, row = None, column = 0, rowSpan = 1, columnSpan = 1, alignment = QtCore.Qt.Alignment(0)):
         # widget.setParent(self)
@@ -218,7 +220,7 @@ class GroupBox(QtGui.QGroupBox, Widget):
 
     @property
     def children(self):
-        return list(self.layout.itemAt(i).widget() for i in xrange(self.count()))
+        return list(self.layout.itemAt(i).widget() for i in range(self.count()))
 
     def count(self):
         return self.layout.count()
@@ -416,7 +418,7 @@ class Slider(QtGui.QWidget, Widget):
         type(self)._instances.remove(self)
 
     def _enter(self):
-        text = unicode(self.edit.text())
+        text = str(self.edit.text())
         if not text:
             return
         oldValue = self.getValue()
@@ -489,7 +491,7 @@ class Slider(QtGui.QWidget, Widget):
         if self.edit is not None:
             self.edit.setText('%.2f' % self.toDisplay(value))
         if hasattr(self.valueConverter, 'units') and \
-           self.valueConverter.units != unicode(self.units.text()):
+           self.valueConverter.units != str(self.units.text()):
             self.units.setText(self.valueConverter.units)
 
     def _f2i(self, x):
@@ -534,7 +536,7 @@ class ButtonBase(Widget):
         self.connect(self, QtCore.SIGNAL('clicked(bool)'), self._clicked)
 
     def getLabel(self):
-        return unicode(self.text())
+        return str(self.text())
 
     def setLabel(self, label):
         label = getLanguageString(label)
@@ -571,6 +573,8 @@ class RadioButton(QtGui.QRadioButton, ButtonBase):
 
     def __init__(self, group, label=None, selected=False):
         label = getLanguageString(label)
+        if isinstance(label, bytes):
+            label = label.decode('utf-8')
         super(RadioButton, self).__init__(label)
         ButtonBase.__init__(self)
         self.group = group
@@ -652,7 +656,7 @@ class ListItem(QtGui.QListWidgetItem):
 
     @property
     def text(self):
-        return unicode(super(ListItem, self).text())
+        return str(super(ListItem, self).text())
 
     def enableCheckbox(self):
         self.__hasCheckbox = True
@@ -800,7 +804,7 @@ class ListView(QtGui.QListWidget, Widget):
         return self.selectionMode() == QtGui.QAbstractItemView.MultiSelection
 
     def getItems(self):
-        return [ self.item(row) for row in xrange(self.count()) ]
+        return [ self.item(row) for row in range(self.count()) ]
 
     def clearSelection(self):
         super(ListView, self).clearSelection()
@@ -814,6 +818,8 @@ class ListView(QtGui.QListWidget, Widget):
 class TextView(QtGui.QLabel, Widget):
     def __init__(self, label = ''):
         label = getLanguageString(label)
+        if isinstance(label, bytes):
+            label = label.decode('utf-8')
         super(TextView, self).__init__(label)
         Widget.__init__(self)
 
@@ -861,7 +867,7 @@ class TextEdit(QtGui.QLineEdit, Widget):
         self.setCursorPosition(len(text))
 
     def getText(self):
-        return unicode(super(TextEdit, self).text())
+        return str(super(TextEdit, self).text())
 
     def validateText(self, text):
         if self.__validator:
@@ -952,7 +958,7 @@ class DocumentEdit(QtGui.QTextEdit, Widget):
         self.insertPlainText(text)
 
     def getText(self):
-        return unicode(super(DocumentEdit, self).toPlainText())
+        return str(super(DocumentEdit, self).toPlainText())
 
 class ProgressBar(QtGui.QProgressBar, Widget):
     def __init__(self, visible=True):
@@ -1008,7 +1014,7 @@ class ShortcutEdit(QtGui.QLabel, Widget):
     def shortcutToLabel(self, mod, key):
         mod &= ~0x20000000 # Qt Bug #4022
         seq = QtGui.QKeySequence(key + mod)
-        s = unicode(seq.toString(QtGui.QKeySequence.NativeText))
+        s = str(seq.toString(QtGui.QKeySequence.NativeText))
         return s
 
     def onChanged(self, shortcut):
@@ -1095,13 +1101,13 @@ class StackedBox(QtGui.QStackedWidget, Widget):
 
     def _updateSize(self):
         if self.autoResize:
-            for i in xrange(self.count()):
+            for i in range(self.count()):
                 w = self.widget(i)
                 if w: w.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Ignored)
             w = self.widget(self.currentIndex())
             if w: w.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         else:
-            for i in xrange(self.count()):
+            for i in range(self.count()):
                 w = self.widget(i)
                 if w: w.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         self.layout().activate()
@@ -1149,7 +1155,7 @@ class Dialog(QtGui.QDialog):
 
         if fmtArgs is None:
             fmtArgs = []
-        elif isinstance(fmtArgs, basestring):
+        elif isinstance(fmtArgs, str):
             fmtArgs = [fmtArgs]
 
         button1Label = getLanguageString(button1Label)
@@ -1392,7 +1398,7 @@ class FileEntryView(QtGui.QWidget, Widget):
             lambda: self._confirm('return'))
 
         self.connect(self.edit, QtCore.SIGNAL('textEdited(QString)'),
-            lambda s: self.callEvent('onChange', unicode(s)))
+            lambda s: self.callEvent('onChange', str(s)))
 
         self.connect(self.confirm, QtCore.SIGNAL('clicked(bool)'),
             lambda _: self._confirm('button'))
@@ -1461,7 +1467,7 @@ class FileEntryView(QtGui.QWidget, Widget):
     path = property(getPath, setPath)
 
     def getText(self):
-        return unicode(self.edit.text())
+        return str(self.edit.text())
 
     def setText(self, text):
         self.edit.setText(text)
@@ -1927,11 +1933,11 @@ class BrowseButton(Button):
             path = os.path.join(path, self.filename)
 
         if self.mode == 'open':
-            path = pathToUnicode(unicode(QtGui.QFileDialog.getOpenFileName(G.app.mainwin, directory=path, filter=self.filter)))
+            path = pathToUnicode(str(QtGui.QFileDialog.getOpenFileName(G.app.mainwin, directory=path, filter=self.filter)))
         elif self.mode == 'save':
-            path = pathToUnicode(unicode(QtGui.QFileDialog.getSaveFileName(G.app.mainwin, directory=path, filter=self.filter)))
+            path = pathToUnicode(str(QtGui.QFileDialog.getSaveFileName(G.app.mainwin, directory=path, filter=self.filter)))
         elif self.mode == 'dir':
-            path = pathToUnicode(unicode(QtGui.QFileDialog.getExistingDirectory(G.app.mainwin, directory=path)))
+            path = pathToUnicode(str(QtGui.QFileDialog.getExistingDirectory(G.app.mainwin, directory=path)))
 
         if path:
             if self.mode == 'dir': self.directory = path
@@ -2030,7 +2036,7 @@ class Action(QtGui.QAction, Widget):
 
     @property
     def text(self):
-        return unicode(super(Action, self).text())
+        return str(super(Action, self).text())
 
     def setActionGroup(self, group):
         self.setCheckable(True)
@@ -2073,7 +2079,7 @@ class TableItem(QtGui.QTableWidgetItem):
 
     @property
     def text(self):
-        return unicode(super(TableItem, self).text())
+        return str(super(TableItem, self).text())
 
 class TableView(QtGui.QTableWidget, Widget):
     def __init__(self):

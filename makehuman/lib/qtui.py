@@ -1,3 +1,4 @@
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -44,13 +45,13 @@ os.environ['QT_API'] = 'pyqt'
 
 # Use version 2 of PyQt4 API
 import sip
-sip.setapi(u'QDate', 2)
-sip.setapi(u'QDateTime', 2)
-sip.setapi(u'QString', 2)
-sip.setapi(u'QTextStream', 2)
-sip.setapi(u'QTime', 2)
-sip.setapi(u'QUrl', 2)
-sip.setapi(u'QVariant', 2)
+sip.setapi('QDate', 2)
+sip.setapi('QDateTime', 2)
+sip.setapi('QString', 2)
+sip.setapi('QTextStream', 2)
+sip.setapi('QTime', 2)
+sip.setapi('QUrl', 2)
+sip.setapi('QVariant', 2)
 
 from PyQt4 import QtCore, QtGui, QtOpenGL
 
@@ -63,7 +64,7 @@ import time
 import getpath
 
 import makehuman
-import getpath
+
 if False and makehuman.isBuild():
     # Set absolute Qt plugin path programatically on frozen deployment to fix
     # crashes when Qt is on DLL PATH in windows.
@@ -674,7 +675,7 @@ class LogWindow(qtgui.ListView):
         self.updateView()
 
     def updateView(self):
-        for i in xrange(self.count()):
+        for i in range(self.count()):
             ilevel = self.getItemData(i)
             self.showItem(i, ilevel >= self.level)
             self.setItemColor(i, log.getLevelColor(ilevel))
@@ -777,7 +778,10 @@ class Application(QtGui.QApplication, events3d.EventHandler):
             handler.sortOrder = o
 
         self.eventHandlers.append(handler)
-        self.eventHandlers.sort(key = lambda h: h.sortOrder)
+# TODO: Restore line 784 with python 3 compliance
+# Sort on next line needs to be made Python 3 compliant
+# Currently it breaks loading of multiple plugins
+        #self.eventHandlers.sort(key = lambda h: h.sortOrder)
 
     def callEventHandlers(self, event_type, event):
         for handler in self.eventHandlers:
@@ -812,15 +816,15 @@ class Application(QtGui.QApplication, events3d.EventHandler):
         self._postAsync(AsyncEvent(func, args, kwargs))
 
 def getSaveFileName(directory, filter = "All files (*.*)"):
-    return unicode(QtGui.QFileDialog.getSaveFileName(
+    return str(QtGui.QFileDialog.getSaveFileName(
         G.app.mainwin, directory = directory, filter = filter))
 
 def getOpenFileName(directory, filter = "All files (*.*)"):
-    return unicode(QtGui.QFileDialog.getOpenFileName(
+    return str(QtGui.QFileDialog.getOpenFileName(
         G.app.mainwin, directory = directory, filter = filter))
 
 def getExistingDirectory(directory):
-    return unicode(QtGui.QFileDialog.getExistingDirectory(
+    return str(QtGui.QFileDialog.getExistingDirectory(
         G.app.mainwin, directory = directory))
 
 def setShortcut(modifier, key, action):

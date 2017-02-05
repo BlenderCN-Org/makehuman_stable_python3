@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -61,7 +61,9 @@ import contextlib
 
 @contextlib.contextmanager
 def outFile(path):
-    from codecs import open
+    if isinstance(path, bytes):
+        path.decode('utf-8')
+    from io import open
     path = mh.getPath(path)
     tmppath = path + '.tmp'
     try:
@@ -73,11 +75,11 @@ def outFile(path):
     except:
         if os.path.exists(tmppath):
             os.remove(tmppath)
-        log.error('unable to save file %s', path, exc_info=True)
+        log.error('unable to save file {}'.format(path, exc_info=True))
 
 @contextlib.contextmanager
 def inFile(path):
-    from codecs import open
+    from io import open
     try:
         path = mh.getPath(path)
         if not os.path.isfile(path):
@@ -86,7 +88,7 @@ def inFile(path):
         with open(path, 'rU', encoding="utf-8") as f:
             yield f
     except:
-        log.error('Failed to load file %s', path, exc_info=True)
+        log.error('Failed to load file {}'.format(path, exc_info=True))
 
 class PluginCheckBox(gui.CheckBox):
 
@@ -520,51 +522,55 @@ class MHApplication(gui3d.Application, mh.Application):
         try:
             name, ext = os.path.splitext(os.path.basename(path))
             if name not in self.getSetting('excludePlugins'):
-                log.message('Importing plugin %s', name)
+                log.message('Importing plugin {}'.format(name))
                 #module = imp.load_source(name, path)
 
                 module = None
                 fp, pathname, description = imp.find_module(name, ["plugins/"])
                 try:
+                    log.message('    fp: {}'.format(fp))
+                    log.message('    pathname {}'.format(pathname))
+                    log.message('    description {}'.format(description))
                     module = imp.load_module(name, fp, pathname, description)
                 finally:
                     if fp:
+                        log.message('Closing fp: {}'.format(fp))
                         fp.close()
                 if module is None:
-                    log.message("Could not import plugin %s", name)
+                    log.message("Module is None".format(name))
                     return
 
                 self.modules[name] = module
-                log.message('Imported plugin %s', name)
-                log.message('Loading plugin %s', name)
+                log.message('Imported plugin {}'.format(name))
+                log.message('Loading plugin {}'.format(name))
                 module.load(self)
-                log.message('Loaded plugin %s', name)
+                log.message('module.load succeded {}\n'.format(name))
 
                 # Process all non-user-input events in the queue to make sure
                 # any callAsync events are run.
                 self.processEvents()
             else:
                 self.modules[name] = None
-        except Exception, _:
-            log.warning('Could not load %s', name, exc_info=True)
+        except Exception as _:
+            log.warning('Load Exception as _ %s\n', name, exc_info=True)
 
     def unloadPlugins(self):
 
-        for name, module in self.modules.iteritems():
+        for name, module in self.modules.items():
             if module is None:
                 continue
             try:
-                log.message('Unloading plugin %s', name)
+                log.message('Unloading plugin {}'.format(name))
                 module.unload(self)
-                log.message('Unloaded plugin %s', name)
-            except Exception, _:
-                log.warning('Could not unload %s', name, exc_info=True)
+                log.message('Unloaded plugin {}'.format(name))
+            except Exception as _:
+                log.warning('Could not unload {}'.format(name, exc_info=True))
 
     def getLoadedPlugins(self):
         """
         Get the names of loaded plugins.
         """
-        return self.modules.keys()
+        return list(self.modules.keys())
 
     def getPlugin(self, name):
         """
@@ -695,7 +701,7 @@ class MHApplication(gui3d.Application, mh.Application):
         import targets
         #import getpath
         for target in targets.getTargets().findTargets('macrodetails'):
-            #log.debug('Preloading target %s', getpath.getRelativePath(target.path))
+            log.debug('Preloading target {}'.format(getpath.getRelativePath(target.path)))
             algos3d.getTarget(self.selectedHuman.meshData, target.path)
 
     def loadFinish(self):
@@ -858,20 +864,20 @@ class MHApplication(gui3d.Application, mh.Application):
             self.undoStack.append(action)
             del self.redoStack[:]
             self.currentFile.changed()
-            log.message('do %s', action.name)
+            log.message('do {}'.format(action.name))
             self.syncUndoRedo()
 
     def did(self, action):
         self.undoStack.append(action)
         self.currentFile.changed()
         del self.redoStack[:]
-        log.message('did %s', action.name)
+        log.message('did {}'.format(action.name))
         self.syncUndoRedo()
 
     def undo(self):
         if self.undoStack:
             action = self.undoStack.pop()
-            log.message('undo %s', action.name)
+            log.message('undo {}'.format(action.name))
             action.undo()
             self.redoStack.append(action)
             self.currentFile.changed()
@@ -880,7 +886,7 @@ class MHApplication(gui3d.Application, mh.Application):
     def redo(self):
         if self.redoStack:
             action = self.redoStack.pop()
-            log.message('redo %s', action.name)
+            log.message('redo {}'.format(action.name))
             action.do()
             self.undoStack.append(action)
             self.currentFile.changed()
@@ -906,7 +912,7 @@ class MHApplication(gui3d.Application, mh.Application):
                 if 'version' in settings and settings['version'] == mh.getVersionDigitsStr():
                     # Only load settings for this specific version
                     del settings['version']
-                    for setting_name, value in settings.items():
+                    for setting_name, value in list(settings.items()):
                         try:
                             self.setSetting(setting_name, value)
                         except:
@@ -934,13 +940,13 @@ class MHApplication(gui3d.Application, mh.Application):
 
         with inFile("mouse.ini") as f:
             mouseActions = dict([(method.__name__, shortcut)
-                                 for shortcut, method in self.mouseActions.iteritems()])
+                                 for shortcut, method in self.mouseActions.items()])
             for line in f:
                 modifier, button, method = line.strip().split(' ')
                 if hasattr(self, method):
                     mouseActions[method] = (int(modifier), int(button))
             self.mouseActions = dict([(shortcut, getattr(self, method))
-                                      for method, shortcut in mouseActions.iteritems()])
+                                      for method, shortcut in mouseActions.items()])
 
         with inFile("help.ini") as f:
             helpIds = set()
@@ -961,11 +967,11 @@ class MHApplication(gui3d.Application, mh.Application):
                 f.write(mh.formatINI(settings))
 
             with outFile("shortcuts.ini") as f:
-                for action, shortcut in self.shortcuts.iteritems():
+                for action, shortcut in self.shortcuts.items():
                     f.write('%d %d %s\n' % (shortcut[0], shortcut[1], action))
 
             with outFile("mouse.ini") as f:
-                for mouseAction, method in self.mouseActions.iteritems():
+                for mouseAction, method in self.mouseActions.items():
                     f.write('%d %d %s\n' % (mouseAction[0], mouseAction[1], method.__name__))
 
             if self.dialog is not None:
@@ -989,9 +995,10 @@ class MHApplication(gui3d.Application, mh.Application):
         self.clearColor = [0.5, 0.5, 0.5]
         self.gridColor = [1.0, 1.0, 1.0]
         self.gridSubColor = [0.7, 0.7, 0.7]
-        log._logLevelColors[log.DEBUG] = 'grey'
-        log._logLevelColors[log.NOTICE] = 'blue'
-        log._logLevelColors[log.WARNING] = 'darkorange'
+        log._logLevelColors[log.DEBUG] = 'lightgrey'
+        log._logLevelColors[log.INFO] = 'lightblue'
+        log._logLevelColors[log.NOTICE] = 'yellow'
+        log._logLevelColors[log.WARNING] = 'orange'
         log._logLevelColors[log.ERROR] = 'red'
         log._logLevelColors[log.CRITICAL] = 'red'
         self.bgBottomLeftColor = [0.101, 0.101, 0.101]
@@ -999,12 +1006,11 @@ class MHApplication(gui3d.Application, mh.Application):
         self.bgTopLeftColor = [0.312, 0.312, 0.312]
         self.bgTopRightColor = [0.312, 0.312, 0.312]
 
-        f = open(os.path.join(mh.getSysDataPath("themes/"), theme + ".mht"), 'rU')
+        f = open(os.path.join(mh.getSysDataPath("themes/"), theme + ".mht"), 'rU', encoding = 'utf-8')
 
         update_log = False
         for data in f.readlines():
             lineData = data.split()
-
             if len(lineData) > 0:
                 if lineData[0] == "version":
                     log.message('Theme %s version %s', theme, lineData[1])
@@ -1045,10 +1051,10 @@ class MHApplication(gui3d.Application, mh.Application):
 
         if update_log:
             self.log_window.updateView()
-        log.debug("Loaded theme %s", mh.getSysDataPath('themes/'+theme+'.mht'))
+        log.debug("Loaded theme {}".format(mh.getSysDataPath('themes/'+theme+'.mht')))
 
         try:
-            f = open(mh.getSysDataPath('themes/%s.qss' % theme), 'r')
+            f = open(mh.getSysDataPath('themes/%s.qss' % theme), 'rU', encoding = 'utf-8')
             qStyle = "\n".join(f.readlines())
             self.setStyleSheet(qStyle)
             # Also set stylesheet on custom slider style
@@ -1079,7 +1085,7 @@ class MHApplication(gui3d.Application, mh.Application):
             action.setIcon(gui.Action.getIcon(action.name))
 
     def getLookAndFeelStyles(self):
-        return [ str(style) for style in gui.QtGui.QStyleFactory.keys() ]
+        return [ str(style) for style in list(gui.QtGui.QStyleFactory.keys()) ]
 
     def setLookAndFeel(self, platform):
         style = gui.QtGui.QStyleFactory.create(platform)
@@ -1098,7 +1104,7 @@ class MHApplication(gui3d.Application, mh.Application):
             return os.path.join(mh.getSysDataPath("themes/default/"), folder, id)
 
     def setLanguage(self, lang):
-        log.debug("Setting language to %s", lang)
+        log.debug("Setting language to {}".format(lang))
         language.language.setLanguage(lang)
         self.setSetting('rtl', language.language.rtl)
 
@@ -1180,7 +1186,7 @@ class MHApplication(gui3d.Application, mh.Application):
     def prompt(self, title, text, button1Label, button2Label=None, button1Action=None, button2Action=None, helpId=None, fmtArgs = None):
         if fmtArgs is None:
             fmtArgs = []
-        elif isinstance(fmtArgs, basestring):
+        elif isinstance(fmtArgs, str):
             fmtArgs = [fmtArgs]
         if self.dialog is None:
             self.dialog = gui.Dialog(self.mainwin)
@@ -1311,7 +1317,7 @@ class MHApplication(gui3d.Application, mh.Application):
             from glmodule import setSceneLighting
             setSceneLighting(self.scene)
 
-        for category in self.categories.itervalues():
+        for category in self.categories.values():
             self.callEventHandlers('onSceneChanged', event)
 
     # Shortcuts
@@ -1319,7 +1325,7 @@ class MHApplication(gui3d.Application, mh.Application):
 
         shortcut = (modifier, key)
 
-        if shortcut in self.shortcuts.values():
+        if shortcut in list(self.shortcuts.values()):
             self.prompt('Warning', 'This combination is already in use.', 'OK', helpId='shortcutWarning')
             return False
 
@@ -1341,7 +1347,7 @@ class MHApplication(gui3d.Application, mh.Application):
             return False
 
         # Remove old entry
-        for s, m in self.mouseActions.iteritems():
+        for s, m in self.mouseActions.items():
             if m == method:
                 del self.mouseActions[s]
                 break
@@ -1355,7 +1361,7 @@ class MHApplication(gui3d.Application, mh.Application):
 
     def getMouseAction(self, method):
 
-        for mouseAction, m in self.mouseActions.iteritems():
+        for mouseAction, m in self.mouseActions.items():
             if m == method:
                 return mouseAction
 
@@ -1463,7 +1469,7 @@ class MHApplication(gui3d.Application, mh.Application):
             raise RuntimeError("Cannot save target to file %s, expected a path to a .target file." % path)
         human = self.selectedHuman
         algos3d.saveTranslationTarget(human.meshData, path)
-        log.message("Full target exported to %s", path)
+        log.message("Full target exported to {}".format(path))
 
     def grabScreen(self):
         import datetime
@@ -1473,7 +1479,7 @@ class MHApplication(gui3d.Application, mh.Application):
         grabName = datetime.datetime.now().strftime('grab_%Y-%m-%d_%H.%M.%S.png')
         filename = os.path.join(grabPath, grabName)
         mh.grabScreen(0, 0, G.windowWidth, G.windowHeight, filename)
-        self.status("Screengrab saved to %s", filename)
+        self.status("Screengrab saved to {}".format(filename))
 
     def resetHuman(self):
         if self.currentFile.modified:
@@ -1705,7 +1711,7 @@ class MHApplication(gui3d.Application, mh.Application):
 
 
     def createShortcuts(self):
-        for action, (modifier, key) in self.shortcuts.iteritems():
+        for action, (modifier, key) in self.shortcuts.items():
             action = getattr(self.actions, action, None)
             if action is not None:
                 mh.setShortcut(modifier, key, action)
@@ -1724,7 +1730,7 @@ class MHApplication(gui3d.Application, mh.Application):
         # Necessary because otherwise setting back to default theme causes crash
         log.message("Initializing default theme first.")
         self.setTheme("default")
-        log.debug("Using Qt system style %s", self.getLookAndFeel())
+        log.debug("Using Qt system style {}".format(self.getLookAndFeel()))
 
         self.createActions()
         self.syncUndoRedo()

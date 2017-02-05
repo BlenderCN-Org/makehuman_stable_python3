@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -37,26 +37,25 @@ Configuration file parser using JSON format
 """
 
 import json
-import getpath
 
-def _s2u(value):
-    if isinstance(value, basestring):
-        return getpath.stringToUnicode(value, ['utf-8', 'iso-8859-1'] + getpath.PATH_ENCODINGS)
+def _u2s(value):
+    if isinstance(value, str):
+        return str(value)
     elif isinstance(value, dict):
-        return dict([(str(key), _s2u(val)) for key, val in value.iteritems()])
+        return dict([(str(key), _u2s(val)) for key, val in value.items()])
     elif isinstance(value, list):
-        return [_s2u(val) for val in value]
+        return [_u2s(val) for val in value]
     else:
         return value
 
 def parseINI(s, replace = []):
     try:
-        result = json.loads(s, encoding='utf-8')
+        result = json.loads(s)
     except ValueError:
         for src, dst in replace + [("'",'"'), (": True",": true"), (": False",": false"), (": None",": null")]:
             s = s.replace(src, dst)
-        result = json.loads(s, encoding='utf-8')
-    return _s2u(result)
+        result = json.loads(s)
+    return _u2s(result)
 
 def formatINI(d):
-    return json.dumps(d, indent=4, ensure_ascii=True, encoding='utf-8') + '\n'
+    return json.dumps(d, indent=4, ensure_ascii=True, encoding='iso-8859-1') + '\n'

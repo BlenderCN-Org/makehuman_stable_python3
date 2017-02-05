@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 # -*- coding: utf-8 -*-
 
 """ 
@@ -44,8 +44,8 @@ OpenGL.ERROR_CHECKING = G.args.get('debugopengl', False)
 OpenGL.ERROR_LOGGING = G.args.get('debugopengl', False)
 OpenGL.FULL_LOGGING = G.args.get('fullloggingopengl', False)
 OpenGL.ERROR_ON_COPY = True
-from OpenGL.GL import *
 from OpenGL.GLU import *
+from OpenGL.GL import *
 from OpenGL.GL.framebufferobjects import *
 from OpenGL.GL.ARB.transpose_matrix import *
 from OpenGL.GL.ARB.multisample import *
@@ -118,7 +118,8 @@ pickingBufferDirty = True
 def updatePickingBuffer():
     width = G.windowWidth
     height = G.windowHeight
-    rwidth = (width + 3) / 4 * 4
+    # python 3 requires explicit floor division
+    rwidth = (width + 3) // 4 * 4
 
     # Resize the buffer in case the window size has changed
     global pickingBuffer
@@ -226,7 +227,7 @@ def reshape(w, h):
         glMatrixMode(GL_MODELVIEW)
 
         updatePickingBuffer()
-    except StandardError:
+    except Exception:
         log.error('gl.reshape', exc_info=True)
 
 def getMousePos():
@@ -263,16 +264,10 @@ def A(*args):
     return np.array(list(args), dtype=np.float32)
 
 def OnInit():
-    try:
-        # Start with writing relevant info to the debug dump in case stuff goes
-        # wrong at a later time
-        debugdump.dump.appendGL()
-        debugdump.dump.appendMessage("GL.VENDOR: " + glGetString(GL_VENDOR))
-        debugdump.dump.appendMessage("GL.RENDERER: " + glGetString(GL_RENDERER))
-        debugdump.dump.appendMessage("GL.VERSION: " + glGetString(GL_VERSION))
-        debugdump.dump.appendMessage("GLSL.VERSION: " + Shader.glslVersionStr())
-    except Exception as e:
-        log.error("Failed to write GL debug info to debug dump: %s", format(str(e)))
+    log.message("GL.VENDOR: " + str(glGetString(GL_VENDOR)))
+    log.message("GL.RENDERER: " + str(glGetString(GL_RENDERER)))
+    log.message("GL.VERSION: " + str(glGetString(GL_VERSION)))
+    log.message("GLSL.VERSION: " + str(Shader.glslVersionStr()))
 
     global have_multisample
     if G.args.get('nomultisampling', False):
@@ -433,7 +428,7 @@ def drawMesh(obj):
             else:
                 glBindTexture(GL_TEXTURE_2D, TEX_NOT_FOUND.textureId)
             if have_activeTexture:
-                for gl_tex_idx in xrange(GL_TEXTURE0 + 1, GL_TEXTURE0 + MAX_TEXTURE_UNITS):
+                for gl_tex_idx in range(GL_TEXTURE0 + 1, GL_TEXTURE0 + MAX_TEXTURE_UNITS):
                     glActiveTexture(gl_tex_idx)
                     glBindTexture(GL_TEXTURE_2D, 0)
                     glDisable(GL_TEXTURE_2D)
@@ -441,7 +436,7 @@ def drawMesh(obj):
                     glDisable(GL_TEXTURE_1D)
         else:
             # Disable all textures (when in fixed function textureless shading mode)
-            for gl_tex_idx in xrange(GL_TEXTURE0, GL_TEXTURE0 + MAX_TEXTURE_UNITS):
+            for gl_tex_idx in range(GL_TEXTURE0, GL_TEXTURE0 + MAX_TEXTURE_UNITS):
                 if have_activeTexture:
                     glActiveTexture(gl_tex_idx)
                 glBindTexture(GL_TEXTURE_2D, 0)
@@ -1031,7 +1026,7 @@ def draw(productionRender = False):
         else:
             _draw(productionRender)
         return True
-    except StandardError:
+    except Exception:
         log.error('gl.draw', exc_info=True)
         return False
 
