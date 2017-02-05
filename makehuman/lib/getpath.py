@@ -10,7 +10,7 @@
 
 **Authors:**           Jonas Hauquier, Glynn Clements, Joel Palmius, Marc Flerackers
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -52,10 +52,14 @@ def _unique_list(l):
 
 PATH_ENCODINGS = _unique_list(map(lambda s:s.lower(), [sys.getfilesystemencoding(), sys.getdefaultencoding(), 'utf-8']))
 
-if not sys.stdout.encoding is None:
-    stdenc = sys.stdout.encoding.lower()
-    if not stdenc in PATH_ENCODINGS:
-        PATH_ENCODINGS.append(sys.stdout.encoding)
+if sys.platform == "win32":
+    """Workaround for windows 7 where people might enter a latin-1 file name, i.e something
+    called åäöüûñ, but this isn't reported as a file system encoding.
+    
+    There is no discernible way to decide exactly which cp125x encoding a file name has, as
+    they are all 8-bit code pages. So picking the one which have rendered us the most 
+    bug reports so far."""
+    PATH_ENCODINGS.append("cp1252")
 
 def pathToUnicode(path):
     """
