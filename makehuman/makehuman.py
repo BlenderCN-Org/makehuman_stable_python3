@@ -782,7 +782,7 @@ makes use of.\n"""
 
 
 def main():
-    print getCopyrightMessage(short=True) + "\n"
+    print (getCopyrightMessage(short=True) + "\n")
     
     
     try:
