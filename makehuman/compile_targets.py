@@ -88,7 +88,7 @@ if __name__ == '__main__':
                 os.remove(iname)
                 os.remove(vname)
                 print ("[%.0f%% done] converted target %s" % (100*(float(i)/float(len(allTargets))), path))
-            except None, e:
+            except None as e:
                 raise e
                 print ('error converting target %s' % path)
 

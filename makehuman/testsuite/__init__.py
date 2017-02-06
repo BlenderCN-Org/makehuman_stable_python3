@@ -55,7 +55,7 @@ def runAll():
     global suite
     suite = TestSuite()
 
-    import test_blender
+    from . import test_blender
     test_blender.runTest(suite)
 
     printResults()

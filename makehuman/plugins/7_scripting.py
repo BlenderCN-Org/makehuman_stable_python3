@@ -44,7 +44,7 @@ import material
 import gui
 import log
 import os
-from cStringIO import StringIO
+from io import StringIO
 from core import G
 from codecs import open
 
@@ -604,7 +604,7 @@ class Scripting():
 
     def printDetailStack(self):
         log.message("SCRIPT: printDetailStack()")
-        for target in self.human.targetsDetailStack.keys():
+        for target in list(self.human.targetsDetailStack.keys()):
             print (str(self.human.targetsDetailStack[target]) + "\t" + target)
 
     def setAge(self,age):
@@ -642,7 +642,7 @@ class Scripting():
 
     def updateModelingParameters(self, dictOfParameterNameAndValue):
         log.message("SCRIPT: updateModelingParameters("+str(dictOfParameterNameAndValue)+")")
-        for key, value in dictOfParameterNameAndValue.iteritems():
+        for key, value in dictOfParameterNameAndValue.items():
             modifier = self.human.getModifier(key)
             modifier.setValue(value)
         self.human.applyAllTargets()
