@@ -286,7 +286,7 @@ if __name__ == '__main__':
     # Obtain MH version to download assets for
     version = getVersion()
 
-    print ('Refreshing assets from repository "%s" (version %s)' % (repo, version))
+    print ('Refreshing assets from repository %s (version %s)' , (repo, version))
 
     ftpPath = os.path.join(ftpPath, version.lstrip('/'), repo.lstrip('/'))
     ftpPath = os.path.normpath(ftpPath)
@@ -316,12 +316,12 @@ if __name__ == '__main__':
         filename = os.path.basename(archiveUrl)
         zipDest = os.path.join(getSysPath(), filename)
         if os.path.exists(zipDest):
-            print "Archive %s already exists, not downloading again." % zipDest
+            print ("Archive %s already exists, not downloading again." % zipDest)
             sys.exit()
-        print "Downloading archive from HTTP (%s)" % archiveUrl
+        print ("Downloading archive from HTTP (%s)" % archiveUrl)
         # Download and extract archive
         downloadFromHTTP(archiveUrl, zipDest)
-        print "Extracting zip archive..."
+        print ("Extracting zip archive...")
         import zipfile
         zFile = zipfile.ZipFile(zipDest)
         zFile.extractall(getSysDataPath())
@@ -350,9 +350,9 @@ if __name__ == '__main__':
                 newFile = filename + '.' + str(i) + '.removedasset'
                 i = i+1
             shutil.move(filename, newFile)
-            print ("Moved removed file to %s (removed from FTP)" % newFile)
+            print ("Moved removed file to %s (removed from FTP)" , newFile)
         else:
-            print (Removing file %s (removed from FTP)" % filename)
+            print ("Removing file %s (removed from FTP)" , filename)
             os.remove(filename)
 
     TOTAL_FILES = len(toDownload)

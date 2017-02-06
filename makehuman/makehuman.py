@@ -449,7 +449,7 @@ def parse_arguments():
     argOptions = vars(parser.parse_args())
 
     if argOptions.get('license', False):
-        print "\n" + getCopyrightMessage() + "\n"
+        print ("\n" + getCopyrightMessage() + "\n")
         sys.exit(0)
 
     return argOptions
