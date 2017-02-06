@@ -82,4 +82,4 @@ if __name__ == '__main__':
     if args.get('token', None) is not None and result:
         result = result.split(' ')[args.get('token')]
 
-    print result
+    print (result)

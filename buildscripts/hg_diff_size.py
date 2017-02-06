@@ -19,7 +19,7 @@ try:
     for line in f:
         if f.isfirstline():
             if filename:
-                print filename,": size changed by", size_diff, "bytes."
+                print (filename,": size changed by", size_diff, "bytes.")
 
             size_diff = 0
             line_diff = 0
@@ -30,7 +30,7 @@ try:
             line_diff += 1
 
     if filename:
-        print filename,": size changed by", size_diff, "bytes. %s lines changed" % line_diff
+        print (filename,": size changed by", size_diff, "bytes. %s lines changed" % line_diff)
 
 finally:
     f.close()
