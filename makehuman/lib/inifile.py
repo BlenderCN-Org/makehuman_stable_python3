@@ -43,7 +43,7 @@ def _s2u(value):
     if isinstance(value, str):
         return getpath.stringToUnicode(value, ['utf-8', 'iso-8859-1'] + getpath.PATH_ENCODINGS)
     elif isinstance(value, dict):
-        return dict([(str(key), _s2u(val)) for key, val in value.items()])
+        return dict([(str(key), _s2u(val)) for key, val in list(value.items())])
     elif isinstance(value, list):
         return [_s2u(val) for val in value]
     else:

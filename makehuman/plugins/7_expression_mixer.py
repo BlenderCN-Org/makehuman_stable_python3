@@ -59,10 +59,10 @@ class ExprSlider(gui.Slider):
         self.taskview = taskview
 
     def _changed(self, value):
-        #print 'caller', self
+        #print ('caller', self)
         self.callEvent('onChange', self)
         # TODO temporary
-        print json.dumps(dict([(m,v) for m, v in self.taskview.modifiers.iteritems() if v != 0]))
+        print (json.dumps(dict([(m,v) for m, v in self.taskview.modifiers.iteritems() if v != 0])))
         self.taskview.sliderChanged()
 
     def _changing(self, value):

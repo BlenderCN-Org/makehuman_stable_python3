@@ -95,9 +95,9 @@ def downloadFile(ftp, filePath, destination, fileProgress):
     if os.path.dirname(destination) and not os.path.isdir(os.path.dirname(destination)):
         os.makedirs(os.path.dirname(destination))
 
-    #print "[%d%% done] Downloading file %s to %s" % (fileProgress, url, filename)
-    print "[%d%% done] Downloading file %s" % (fileProgress, os.path.basename(destination))
-    print "             %s ==> %s" % (filePath, destination)
+    #print ("[%d%% done] Downloading file %s to %s" % (fileProgress, url, filename))
+    print ("[%d%% done] Downloading file %s" % (fileProgress, os.path.basename(destination)))
+    print ("             %s ==> %s" % (filePath, destination))
     downloadFromFTP(ftp, filePath, destination)
 
 def parseContentsFile(filename):
@@ -193,7 +193,7 @@ def getFTPContents(ftp):
 
         return result
 
-    print 'Retrieving new repository content...'
+    print ('Retrieving new repository content...')
     rootPath = ftp.pwd()
     contentsList = walkFTP(ftp)
     sys.stdout.write("[100% done] Getting repository contents\r")
@@ -286,7 +286,7 @@ if __name__ == '__main__':
     # Obtain MH version to download assets for
     version = getVersion()
 
-    print 'Refreshing assets from repository "%s" (version %s)' % (repo, version)
+    print ('Refreshing assets from repository "%s" (version %s)' % (repo, version))
 
     ftpPath = os.path.join(ftpPath, version.lstrip('/'), repo.lstrip('/'))
     ftpPath = os.path.normpath(ftpPath)
@@ -304,14 +304,14 @@ if __name__ == '__main__':
         oldContents = {}
 
     # Setup FTP connection
-    print "Connecting to FTP..."
+    print ("Connecting to FTP...")
     ftp = FTP(ftpUrl)
     ftp.login()
     ftp.cwd(ftpPath.replace('\\', '/'))
 
     # Verify if there is an archive reference URL
     if isArchived(ftp):
-        print "Redirected to asset archive"
+        print ("Redirected to asset archive")
         archiveUrl = downloadFromFTP(ftp, 'archive_url.txt', None).strip()
         filename = os.path.basename(archiveUrl)
         zipDest = os.path.join(getSysPath(), filename)
@@ -326,7 +326,7 @@ if __name__ == '__main__':
         zFile = zipfile.ZipFile(zipDest)
         zFile.extractall(getSysDataPath())
 
-        print "All done."
+        print ("All done.")
         sys.exit()
 
     # Get contents from FTP
@@ -350,9 +350,9 @@ if __name__ == '__main__':
                 newFile = filename + '.' + str(i) + '.removedasset'
                 i = i+1
             shutil.move(filename, newFile)
-            print "Moved removed file to %s (removed from FTP)" % newFile
+            print ("Moved removed file to %s (removed from FTP)" % newFile)
         else:
-            print "Removing file %s (removed from FTP)" % filename
+            print (Removing file %s (removed from FTP)" % filename)
             os.remove(filename)
 
     TOTAL_FILES = len(toDownload)
@@ -371,7 +371,7 @@ if __name__ == '__main__':
                 newFile = filename + '.' + str(i) + '.oldasset'
                 i = i+1
             shutil.move(filename, newFile)
-            print "Moved old version of updated file to %s" % newFile
+            print ("Moved old version of updated file to %s" % newFile)
 
         fileProgress = round(100 * float(fIdx)/TOTAL_FILES, 2)
         downloadFile(ftp, filePath, filename, fileProgress)
@@ -381,5 +381,5 @@ if __name__ == '__main__':
 
     writeContentsFile(contentsFile, newContents)
 
-    print "All done."
+    print ("All done.")
 

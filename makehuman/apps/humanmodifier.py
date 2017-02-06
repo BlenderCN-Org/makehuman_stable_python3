@@ -445,7 +445,7 @@ class ManagedTargetModifier(Modifier):
         path = tuple(path.split('-'))
         for target in targets.getTargets().groups.get(path, []):
             keys = [key
-                    for key, var in target.data.items()
+                    for key, var in list(target.data.items())
                     if var is not None]
             result.update(keys)
         return result
