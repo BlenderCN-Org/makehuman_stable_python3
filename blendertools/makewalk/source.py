@@ -80,7 +80,7 @@ def guessSrcArmatureFromList(rig, scn):
     bestMisses = 1000
 
     misses = {}
-    for name in _sourceArmatures.keys():
+    for name in list(_sourceArmatures.keys()):
         if name == "Automatic":
             continue
         amt = _sourceArmatures[name]
@@ -100,7 +100,7 @@ def guessSrcArmatureFromList(rig, scn):
         return best
     else:
         print("Number of misses:")
-        for (name, n) in misses.items():
+        for (name, n) in list(misses.items()):
             print("  %14s: %2d" % (name, n))
         print("Best bone map for armature %s:" % best.name)
         amt = _sourceArmatures[best.name]
@@ -165,7 +165,7 @@ def setArmature(rig, scn):
 #
 
 def findSourceKey(bname, struct):
-    for bone in struct.keys():
+    for bone in list(struct.keys()):
         if bname == struct[bone]:
             return bone
     return None

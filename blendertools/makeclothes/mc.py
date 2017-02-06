@@ -43,7 +43,7 @@ class CSettings(mh.CSettings):
         mh.CSettings.__init__(self, version)
 
         if version == "alpha7":
-            self.topOfSkirt    = range(16691,16707)
+            self.topOfSkirt    = list(range(16691,16707))
 
             self.bodyPartVerts = {
                 "Body" : ((13868, 14308), (881, 13137), (10854, 10981)),

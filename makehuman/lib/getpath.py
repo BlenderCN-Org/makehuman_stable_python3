@@ -50,7 +50,7 @@ def _unique_list(l):
     seen = set()
     return [x for x in l if not (x in seen or seen.add(x))]
 
-PATH_ENCODINGS = _unique_list(map(lambda s:s.lower(), [sys.getfilesystemencoding(), sys.getdefaultencoding(), 'utf-8']))
+PATH_ENCODINGS = _unique_list([s.lower() for s in [sys.getfilesystemencoding(), sys.getdefaultencoding(), 'utf-8']])
 
 if sys.platform == "win32":
     """Workaround for windows 7 where people might enter a latin-1 file name, i.e something
@@ -81,13 +81,13 @@ def stringToUnicode(string_, encodings):
     in the order in which they are specified. Implements fallback when no
     encoding is valid.
     """
-    if isinstance(string_, unicode):
+    if isinstance(string_, str):
         # Is already unicode
         return string_
 
     for encoding in encodings:
         try:
-            result = unicode(string_, encoding, 'strict')
+            result = str(string_, encoding, 'strict')
         except UnicodeDecodeError:
             pass
         except TypeError:
@@ -95,7 +95,7 @@ def stringToUnicode(string_, encodings):
             break
 
     try:
-        str_ = unicode(string_, 'utf-8', 'strict')
+        str_ = str(string_, 'utf-8', 'strict')
         for encoding in encodings:
             try:
                 return str_.decode(encoding, 'strict')
@@ -108,7 +108,7 @@ def stringToUnicode(string_, encodings):
         pass
 
     # Last-resort fallback
-    fallback = unicode(string_, 'ascii', 'replace')
+    fallback = str(string_, 'ascii', 'replace')
     import log
     try:
         log.warning('Failed to decode string "%s" to unicode (encodings tried: %s). Using fallback value: %s', string_, ', '.join(encodings), fallback)
@@ -155,15 +155,15 @@ def getHomePath():
 
     # Windows
     if sys.platform == 'win32':
-        import _winreg
+        import winreg
         keyname = r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
         #name = 'Personal'
-        k = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, keyname)
-        value, type_ = _winreg.QueryValueEx(k, 'Personal')
-        if type_ == _winreg.REG_EXPAND_SZ:
-            __home_path = formatPath(_winreg.ExpandEnvironmentStrings(value))
+        k = winreg.OpenKey(winreg.HKEY_CURRENT_USER, keyname)
+        value, type_ = winreg.QueryValueEx(k, 'Personal')
+        if type_ == winreg.REG_EXPAND_SZ:
+            __home_path = formatPath(winreg.ExpandEnvironmentStrings(value))
             return __home_path
-        elif type_ == _winreg.REG_SZ:
+        elif type_ == winreg.REG_SZ:
             __home_path = formatPath(value)
             return __home_path
         else:
@@ -247,7 +247,7 @@ def commonprefix(paths, sep='/'):
     """
     from itertools import takewhile
 
-    bydirectorylevels = zip(*[p.split(sep) for p in paths])
+    bydirectorylevels = list(zip(*[p.split(sep) for p in paths]))
     return sep.join(x[0] for x in takewhile(_allnamesequal, bydirectorylevels))
 
 def isSubPath(subpath, path):
@@ -346,9 +346,9 @@ def search(paths, extensions, recursive=True, mutexExtensions=False):
     will be returned. Instead, only the file with highest extension precedence 
     (extensions occurs earlier in the extensions list) is kept.
     """
-    if isinstance(paths, basestring):
+    if isinstance(paths, str):
         paths = [paths]
-    if isinstance(extensions, basestring):
+    if isinstance(extensions, str):
         extensions = [extensions]
     extensions = [e[1:].lower() if e.startswith('.') else e.lower() for e in extensions]
 
@@ -388,7 +388,7 @@ def search(paths, extensions, recursive=True, mutexExtensions=False):
                             yield pathToUnicode( f )
 
     if mutexExtensions:
-        for f in ["%s.%s" % (p,e) for p,e in discovered.items()]:
+        for f in ["%s.%s" % (p,e) for p,e in list(discovered.items())]:
             yield pathToUnicode( f )
 
 def getJailedPath(filepath, relativeTo, jailLimits=[getDataPath(), getSysDataPath()]):

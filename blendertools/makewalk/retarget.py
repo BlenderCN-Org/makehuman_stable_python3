@@ -86,10 +86,10 @@ class CAnimation:
         t_pose.setTPose(self.srcRig, scn)
         selectAndSetRestPose(self.trgRig, scn)
         t_pose.setTPose(self.trgRig, scn)
-        for banim in self.boneAnims.values():
+        for banim in list(self.boneAnims.values()):
             banim.insertTPoseFrame()
         scn.frame_set(0)
-        for banim in self.boneAnims.values():
+        for banim in list(self.boneAnims.values()):
             banim.getTPoseMatrix()
 
 
@@ -98,7 +98,7 @@ class CAnimation:
         try:
             for frame in frames:
                 scn.frame_set(frame)
-                for banim in self.boneAnims.values():
+                for banim in list(self.boneAnims.values()):
                     banim.retarget(frame)
         finally:
             unhideObjects(objects)

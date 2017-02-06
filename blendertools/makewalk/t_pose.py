@@ -50,7 +50,7 @@ def applyRestPose(context, value):
 
         reallySelect(ob, scn)
         if ob != context.object:
-            raise StandardError("Context switch did not take:\nob = %s\nc.ob = %s\nc.aob = %s" %
+            raise Exception("Context switch did not take:\nob = %s\nc.ob = %s\nc.aob = %s" %
                 (ob, context.object, context.active_object))
 
         if (ob.McpArmatureName == rig.name and

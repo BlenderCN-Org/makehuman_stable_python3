@@ -328,7 +328,7 @@ def loadBvhFile(context, filepath):
 
 
 def copyPose(src, trg):
-    for name,srcBone in src.pose.bones.items():
+    for name,srcBone in list(src.pose.bones.items()):
         trgBone = trg.pose.bones[srcBone.name]
         s = srcBone.matrix_basis
         t = trgBone.matrix_basis.copy()
@@ -423,7 +423,7 @@ def readWeights(filepath, nVerts):
     fp.close()
 
     normedWeights = {}
-    for vn,data in weights.items():
+    for vn,data in list(weights.items()):
         wsum = 0.0
         for bone,w in data:
             wsum += w

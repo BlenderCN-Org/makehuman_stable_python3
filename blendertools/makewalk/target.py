@@ -76,7 +76,7 @@ def getTargetArmature(rig, scn):
     setCategory("Identify Target Rig")
     ensureTargetInited(scn)
     selectAndSetRestPose(rig, scn)
-    bones = rig.data.bones.keys()
+    bones = list(rig.data.bones.keys())
 
     if scn.McpAutoTargetRig:
         name = guessTargetArmatureFromList(rig, bones, scn)
@@ -146,7 +146,7 @@ def guessTargetArmatureFromList(rig, bones, scn):
     elif isMhx7Rig(rig):
         return "MH-alpha7"
     elif False:
-        for name in _targetInfo.keys():
+        for name in list(_targetInfo.keys()):
             if name not in ["MHX", "Default", "MB", "Rigify", "MH-alpha7"]:
                 (boneAssoc, _ikBones, _tpose) = _targetInfo[name]
                 if testTargetRig(name, rig, boneAssoc):

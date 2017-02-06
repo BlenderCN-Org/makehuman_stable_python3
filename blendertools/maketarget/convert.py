@@ -173,7 +173,7 @@ def readBaseObj(filepath):
 
 def copyVerts(verts):
     newverts = {}
-    for n,v in verts.items():
+    for n,v in list(verts.items()):
         newverts[n] = v.copy()
     return newverts
 
@@ -237,7 +237,7 @@ def readTarget(filepath, verts):
 
 def saveTarget(trgVerts, filepath):
     fp = open(filepath, "w", encoding="utf-8", newline="\n")
-    for vn,trgVert in trgVerts.items():
+    for vn,trgVert in list(trgVerts.items()):
         if trgVert.length() > Epsilon:
             co = trgVert.co
             fp.write("%d %s %s %s\n" % (vn, round(co[0]), round(co[1]), round(co[2])))

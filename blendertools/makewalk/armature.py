@@ -50,7 +50,7 @@ class CArmature:
 
     def display(self, type):
         print("%s Armature: %s" % (type, self.name))
-        for bname,mhx in self.boneNames.items():
+        for bname,mhx in list(self.boneNames.items()):
             print("  %14s %14s" % (bname, mhx))
 
 

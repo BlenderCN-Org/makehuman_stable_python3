@@ -82,7 +82,7 @@ def isOkHuman(ob):
 
 
 def getLastVertices():
-    vlist = [ vs[1] for vs in theSettings.vertices.values()]
+    vlist = [ vs[1] for vs in list(theSettings.vertices.values())]
     vlist.append(theSettings.nTotalVerts)
     vlist.sort()
     return vlist
@@ -390,7 +390,7 @@ def findBestVerts(scn, humanGroup, pExactIndex, hum, clo):
         # rigid[vn] = False
 
     rgfaces = {}
-    for idx in humanGroup.keys():
+    for idx in list(humanGroup.keys()):
         bg,bverts = humanGroup[idx]
         if isRigidVGroup(bg):
             print("RIGID", bg.name)
@@ -1144,13 +1144,13 @@ def checkNoTriangles(scn, ob):
             strayVerts[vn] = False
             nPoles[vn] += 1
 
-    stray = [vn for vn in strayVerts.keys() if strayVerts[vn]]
+    stray = [vn for vn in list(strayVerts.keys()) if strayVerts[vn]]
     if len(stray) > 0:
         highlightVerts(scn, ob, stray)
         msg = "Object %s\ncan not be used for clothes creation\nbecause it has stray verts:\n  %s" % (ob.name, stray)
         raise MHError(msg)
 
-    excess = [vn for vn in nPoles.keys() if nPoles[vn] > 8]
+    excess = [vn for vn in list(nPoles.keys()) if nPoles[vn] > 8]
     if len(excess) > 0:
         highlightVerts(scn, ob, excess)
         msg = "Object %s\ncan not be used for clothes creation\nbecause it has verts with more than 8 poles:\n  %s" % (ob.name, excess)
@@ -1550,7 +1550,7 @@ def autoVertexGroups(ob, type, htype):
         verts = getHumanVerts(ob.data, type, htype)
     else:
         verts = ob.data.vertices
-    for v in verts.values():
+    for v in list(verts.values()):
         vn = v.index
         if v.co[0] > 0.01:
             left.add([vn], 1.0, 'REPLACE')
@@ -1594,7 +1594,7 @@ def getHelperVerts(me, htype):
         checkEnoughVerts(me, htype, theSettings.clothesVerts[0])
         for vn in range(theSettings.clothesVerts[0], theSettings.clothesVerts[1]):
             verts[vn] = me.vertices[vn]
-    elif htype in vnums.keys():
+    elif htype in list(vnums.keys()):
         checkEnoughVerts(me, htype, vnums[htype][0])
         for vn in range(vnums[htype][0], vnums[htype][1]):
             verts[vn] = me.vertices[vn]
@@ -1640,7 +1640,7 @@ def selectHumanPart(ob, btype, htype):
     if isOkHuman(ob):
         clearSelection()
         verts = getHumanVerts(ob.data, btype, htype)
-        for v in verts.values():
+        for v in list(verts.values()):
             v.select = True
         bpy.ops.object.mode_set(mode='EDIT')
     else:
@@ -1738,7 +1738,7 @@ def saveDefaultSettings(context):
     fname = settingsFile("settings")
     fp = mc.openOutputFile(fname)
     scn = context.scene
-    for (prop, value) in scn.items():
+    for (prop, value) in list(scn.items()):
         if prop[0:2] == "MC":
             if type(value) == int:
                 fp.write("%s int %s\n" % (prop, value))
@@ -1881,7 +1881,7 @@ def init():
     bpy.types.Scene.MCSelfClothed = BoolProperty(default=False)
 
     enums = []
-    for name in theSettings.vertices.keys():
+    for name in list(theSettings.vertices.keys()):
         enums.append((name,name,name))
 
     bpy.types.Scene.MCKeepVertsUntil = EnumProperty(

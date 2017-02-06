@@ -511,7 +511,7 @@ def saveDefaults(context):
     except:
         print("Unable to open %s for writing" % filename)
         return
-    for (key,value) in context.scene.items():
+    for (key,value) in list(context.scene.items()):
         if key[:3] == "Mcp":
             fp.write("%s %s\n" % (key, value))
     fp.close()

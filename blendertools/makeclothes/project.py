@@ -132,7 +132,7 @@ def unwrapObject(ob, context):
 #
 
 def printItems(struct):
-    for (key,value) in struct.items():
+    for (key,value) in list(struct.items()):
         print(key, value)
 
 
@@ -216,14 +216,14 @@ def projectUVs(bob, pob, context):
                 uvf.set(n, uv)
 
     (bVertList, bPairList, bEdgeList) = getSeams(bob, bTexFaces, context.scene)
-    for (en,fcs) in pSeamEdgeFaces.items():
+    for (en,fcs) in list(pSeamEdgeFaces.items()):
         pe = pob.data.edges[en]
         for m in range(2):
             pv = pverts[pe.vertices[m]]
             be = findClosestEdge(pv, bEdgeList, bverts, bedges)
             for pf in fcs:
                 fn = pf.index
-                for (n, rmd) in remains[fn].items():
+                for (n, rmd) in list(remains[fn].items()):
                     if rmd:
                         (uvf, pvn, vt, uv0) = rmd
                         if pv.index == pvn:
@@ -277,7 +277,7 @@ def getTexFaces(me, ln):
 
 def modifyTexFaces(meFaces, texFaces):
     from . import helpers
-    for idx,uvs in helpers.TexFaces.items():
+    for idx,uvs in list(helpers.TexFaces.items()):
         texFaces[idx].uvs = uvs
 
 
@@ -518,7 +518,7 @@ def autoSeams(context):
                     mindist = vec.length
             closest[bv.index] = best
         saveClosest(closest)
-    for pv in closest.values():
+    for pv in list(closest.values()):
         pass
         #pv.select = True
 
@@ -596,7 +596,7 @@ def saveClosest(closest):
     fname = settingsFile("closest")
     fp = mc.openOutputFile(fname)
     if fp:
-        for bvn,pv in closest.items():
+        for bvn,pv in list(closest.items()):
             fp.write("%d %d\n" % (bvn, pv.index))
         fp.close()
 

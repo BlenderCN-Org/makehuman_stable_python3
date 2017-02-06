@@ -126,7 +126,7 @@ class CProxy:
     def updateWeights(self, srcWeights):
         rlen = len(self.refVerts)
         trgWeights = {}
-        for n,refVert in self.refVerts.items():
+        for n,refVert in list(self.refVerts.items()):
             trgWeights[n] = refVert.updateWeight(srcWeights)
         return trgWeights
 

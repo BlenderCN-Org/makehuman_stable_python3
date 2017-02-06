@@ -187,10 +187,10 @@ def loadAndApplyTarget(context):
 
     ob = context.object
     props = {}
-    for key in ob.keys():
+    for key in list(ob.keys()):
         props[key] = ob[key]
     applyTargets(context)
-    for key in props.keys():
+    for key in list(props.keys()):
         ob[key] = props[key]
     ob.name = bodytype.split("-")[1]
     ob.shape_key_add(name="Basis")
@@ -767,7 +767,7 @@ def applyTargets(context):
     bpy.ops.object.mode_set(mode='OBJECT')
     verts = evalVertLocations(ob)
     utils.removeShapeKeys(ob)
-    for prop in ob.keys():
+    for prop in list(ob.keys()):
         del ob[prop]
     for v in ob.data.vertices:
         v.co = verts[v.index]
@@ -1174,13 +1174,13 @@ def symmetrizeTarget(context, left2right, mirror):
     verts = ob.active_shape_key.data
     nVerts = len(verts)
 
-    for vn in Mid2Mid.keys():
+    for vn in list(Mid2Mid.keys()):
         if vn >= nVerts:
             break
         v = verts[vn]
         v.co[0] = 0
 
-    for (lvn,rvn) in Left2Right.items():
+    for (lvn,rvn) in list(Left2Right.items()):
         if lvn >= nVerts or rvn >= nVerts:
             break
         lv = verts[lvn].co
@@ -1207,12 +1207,12 @@ def symmetrizeTarget(context, left2right, mirror):
     bpy.ops.mesh.select_all(action='DESELECT')
     bpy.ops.object.mode_set(mode='OBJECT')
 
-    for vn in Mid2Mid.keys():
+    for vn in list(Mid2Mid.keys()):
         if vn >= nVerts:
             break
         bverts[vn].select = selected[vn]
 
-    for (lvn,rvn) in Left2Right.items():
+    for (lvn,rvn) in list(Left2Right.items()):
         if lvn >= nVerts or rvn >= nVerts:
             break
         if mirror:
