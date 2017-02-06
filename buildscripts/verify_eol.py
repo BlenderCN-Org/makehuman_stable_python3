@@ -59,13 +59,13 @@ def check_dos_eol(path):
     global _recurse_files
     result = []
     for f in _recurse_get_ascii_files(path):
-        if "\r\n" in open(f, 'rb').read():
+        if "\r\n" in open(f, 'r').read():
             result.append( f )
     return result
 
 def fix_dos_eol(filepaths):
     for f in filepaths:
-        fh = open(f, 'rb')
+        fh = open(f, 'r')
         contents = fh.read()
         fh.close()
         contents = contents.replace('\r\n', '\n')

@@ -31,7 +31,7 @@ import gzip
 
 def loadJson(filepath):
     try:
-        with gzip.open(filepath, 'rb') as fp:
+        with gzip.open(filepath, 'r') as fp:
             bytes = fp.read()
     except IOError:
         bytes = None
