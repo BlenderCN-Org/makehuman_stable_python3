@@ -10,7 +10,7 @@
 
 **Authors:**           Thomas Larsson, Jonas Hauquier
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -111,7 +111,7 @@ def writeAnimationBone(fp, bone, anim, config):
     string = '          '
     relmat = bone.getRelativeMatrix(config.meshOrientation, config.localBoneAxis, config.offset)
     restmat = bone.getRestMatrix(config.meshOrientation, config.localBoneAxis, config.offset)
-    #print bone.index, anim.nBones
+    #print (bone.index, anim.nBones)
     mats = anim.data[bone.index::anim.nBones]  # Get all pose matrices for this bone
     I = np.identity(4, dtype=np.float32)
     parents = []

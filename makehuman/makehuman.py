@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.5
 # -*- coding: utf-8 -*-
 
 """
@@ -12,7 +12,7 @@ MakeHuman python entry-point.
 
 **Authors:**           Glynn Clements, Jonas Hauquier, Joel Palmius
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3 
 
@@ -39,27 +39,23 @@ This file starts the MakeHuman python application.
 
   # Fix 'from . import x' statements on python 2.6
 import sys
-import imp
-imp.reload(sys)
 # sys.setdefaultencoding('utf-8')
-
 import os
 import re
 import subprocess
 
 ## Version information #########################################################
-__version__ = "1.1.0"                   # Major, minor and patch version number
+__version__ = "1.1.1"                   # Major, minor and patch version number
 release = False                         # False for nightly
 versionSub = ""                         # Short version description
 meshVersion = "hm08"                    # Version identifier of the basemesh
 ################################################################################
 
 __author__ = "Jonas Hauquier, Joel Palmius, Glynn Clements, Thomas Larsson et al."
-__copyright__ = "Copyright 2016 Data Collection AB and listed authors"
+__copyright__ = "Copyright 2017 Data Collection AB and listed authors"
 __credits__ = ["See http://www.makehuman.org/halloffame"]
 __license__ = "AGPLv3"
 __maintainer__ = "Joel Palmius, Jonas Hauquier"
-__email__ = "dev@makehuman.org"
 __status__ = "Production" if release else "Development"
 
 
@@ -384,7 +380,7 @@ def get_platform_paths():
         stderr_filename = os.path.join(home, "makehuman-error.txt")
 
 def redirect_standard_streams():
-    from codecs import open
+    from io import open
     import locale
     encoding = locale.getpreferredencoding()
     if stdout_filename:
@@ -442,6 +438,7 @@ def parse_arguments():
     parser.add_argument("--fullloggingopengl", action="store_true", help="log all OpenGL calls (very slow)")
     parser.add_argument("--debugnumpy", action="store_true", help="enable numpy runtime error messages")
     parser.add_argument("--home-location", action="store", help="set alternative home path")
+    
     if not isRelease():
         parser.add_argument("-t", "--runtests", action="store_true", help="run test suite (for developers)")
 
@@ -458,14 +455,14 @@ def parse_arguments():
 
 def getCopyrightMessage(short=False):
     if short:
-        return """MakeHuman Copyright (C) 2001-2016 http://www.makehuman.org
+        return """MakeHuman Copyright (C) 2001-2017 http://www.makehuman.org
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. For details use the option --license"""
 
     return """Makehuman is a completely free, open source, innovative and 
 professional software for the modelling of 3-Dimensional humanoid characters
-Copyright (C) 2001-2016  www.makehuman.org
+Copyright (C) 2001-2017  www.makehuman.org
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -501,12 +498,12 @@ For further help, have a look in the community wiki at:
 
     http://www.makehumancommunity.org/wiki/Main_Page
 
-The MakeHuman team can be contacted at dev@makehuman.org
-
 If you have other questions or need support, feel free to ask on our 
 forums at:
 
     http://www.makehumancommunity.org/forum/
+
+The forums is also where you can contact the MakeHuman team. 
 
 Bugs can be reported on the project's bug tracker:
 
@@ -536,7 +533,7 @@ class LicenseInfo(object):
         self.author = "MakeHuman Team"
         self.license = "AGPL3"
         self.homepage = "http://www.makehuman.org"
-        self.copyright = "(c) MakeHuman.org 2001-2016"
+        self.copyright = "(c) MakeHuman.org 2001-2017"
         self._keys = ["author", "license", "copyright", "homepage"]
         self._customized = False
 
@@ -706,7 +703,7 @@ http://www.makehuman.org/halloffame'''
 
 def getSoftwareLicense(richtext=False):
     import getpath
-    from codecs import open
+    from io import open
     lfile = getpath.getSysPath('license.txt')
     if not os.path.isfile(lfile):
         if richtext:
@@ -724,7 +721,7 @@ def getSoftwareLicense(richtext=False):
 
 def getThirdPartyLicenses(richtext=False):
     import getpath
-    from codecs import open
+    from io import open
     from collections import OrderedDict
     def _title(name, url, license):
         if richtext:
@@ -785,8 +782,7 @@ makes use of.\n"""
 
 def main():
     print(getCopyrightMessage(short=True) + "\n")
-    
-    
+
     try:
         set_sys_path()
         args = parse_arguments()

@@ -10,7 +10,7 @@
 
 **Authors:**           Jonas Hauquier
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -386,7 +386,7 @@ class PoseUnit(AnimationTrack):
                 f_idxs.append(0)
             weights /= t
 
-        #print zip([self.getPoseNames()[_f] for _f in f_idxs],weights)
+        #print (zip([self.getPoseNames()[_f] for _f in f_idxs],weights))
 
         result = emptyPose(self.nBones)
         m = np.identity(4, dtype=np.float32)

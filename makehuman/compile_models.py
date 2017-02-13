@@ -10,7 +10,7 @@
 
 **Authors:**           Jonas Hauquier, Glynn Clements
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -69,7 +69,7 @@ def compileMesh(path):
 
     try:
         npzpath = os.path.splitext(path)[0] + '.npz'
-        #print 'Compiling mesh to binary: %s' % npzpath
+        #print ('Compiling mesh to binary: %s' % npzpath)
         try:
             files3d.loadTextMesh(obj, path)
         except:

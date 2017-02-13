@@ -10,7 +10,7 @@
 
 **Authors:**           Joel Palmius, Marc Flerackers, Jonas Hauquier
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -1098,7 +1098,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
         # Apply targets to seedmesh coordinates
         itprog = Progress(len(self.targetsDetailStack))
-        for (targetPath, morphFactor) in self.targetsDetailStack.items():
+        for (targetPath, morphFactor) in list(self.targetsDetailStack.items()):
             algos3d.loadTranslationTarget(self.meshData, targetPath, morphFactor, None, 0, 0)
             itprog.step()
 

@@ -10,7 +10,7 @@
 
 **Authors:**           Joel Palmius, Marc Flerackers
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -650,7 +650,7 @@ class Application(events3d.EventHandler):
 
         self.fullscreen = event.fullscreen
 
-        for category in self.categories.values():
+        for category in list(self.categories.values()):
             category.callEvent('onResized', event)
             for task in category.tasks:
                 task.callEvent('onResized', event)

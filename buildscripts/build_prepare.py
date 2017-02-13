@@ -275,9 +275,9 @@ class MHAppExporter(object):
         _fixOnFinish = []
         for f in os.listdir( self.targetFile(REARRANGE_ROOT_FOLDER) ):
             path = self.targetFile(os.path.join(REARRANGE_ROOT_FOLDER, f))
-            print "Moving %s to root" % os.path.join(REARRANGE_ROOT_FOLDER, f)
+            print ("Moving %s to root" % os.path.join(REARRANGE_ROOT_FOLDER, f))
             if os.path.exists(self.targetFile(f)):
-                #print "WARNING: overwriting folder of file %s with %s" % (f, os.path.join(REARRANGE_ROOT_FOLDER, f))
+                #print ("WARNING: overwriting folder of file %s with %s" % (f, os.path.join(REARRANGE_ROOT_FOLDER, f)))
                 _fixOnFinish.append(f)
                 shutil.move(path, self.targetFile(f+'--fixOnFinish'))
             else:

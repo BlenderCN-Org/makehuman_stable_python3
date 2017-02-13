@@ -12,7 +12,7 @@ Testing suite
 
 **Authors:**           Jonas Hauquier
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -78,6 +78,7 @@ def printResults():
             print("Test error: unknown status: %s" % status)
 
     print("Test results:")
+    total = success + warning + failed
     total = success + warning + failed
     print("Successful: %s/%s (%s%%)" % (success, total, int((float(success)/total)*100)))
     print("Failed: %s/%s (%s%%)" % (failed, total, int((float(failed)/total)*100)))

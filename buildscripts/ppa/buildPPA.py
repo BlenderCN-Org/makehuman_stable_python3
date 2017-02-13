@@ -12,7 +12,7 @@ MakeHuman debian package build script
 
 **Authors:**           Joel Palmius, Jonas Hauquier
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -104,7 +104,7 @@ def _cp_pattern(srcFolder, destFolder, extIncludingDot):
         destDir = os.path.dirname(destFile)
         if not os.path.exists(destDir):
           os.makedirs(destDir)
-          #print destDir
+          #print (destDir)
         shutil.copy(srcFile, destFile)
 
 def _sed_replace(filepath, templateToken, replaceStr):
@@ -181,6 +181,9 @@ def configurePaths():
   # Where do we find deb build configuration files
   settings["deb_config_location"] = os.path.join(settings["location_of_script"],"packages")
   print("Location of deb build config files: " + settings["deb_config_location"])
+
+  # Staging area for building source and binary debs
+  settings["deb_staging_location"] = os.path.join(settings["build_root"],"deb_staging") 
 
   # Staging area for building source and binary debs
   settings["deb_staging_location"] = os.path.join(settings["build_root"],"deb_staging") 

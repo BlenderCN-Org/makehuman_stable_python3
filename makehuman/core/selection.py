@@ -10,7 +10,7 @@
 
 **Authors:**           Glynn Clements
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -138,9 +138,9 @@ class SelectionColorMap:
             groupSelected = self.colorIDToFaceGroup[IDkey]
         except:
 
-            # print groupSelected.name
+            # print (groupSelected.name)
             #this print should only come on while debugging color picking
-            #print 'Color %s (%s) not found' % (IDkey, picked)
+            #print ('Color %s (%s) not found' % (IDkey, picked))
             groupSelected = None
         return groupSelected
 
@@ -161,7 +161,7 @@ class SelectionColorMap:
             return (facegroupPicked, objPicked)
         else:
             #this print should only be made while debugging picking
-            #print 'not a clickable zone'
+            #print ('not a clickable zone')
             return None
     
 selectionColorMap = SelectionColorMap()

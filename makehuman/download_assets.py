@@ -10,7 +10,7 @@
 
 **Authors:**           Jonas Hauquier
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -95,7 +95,7 @@ def downloadFile(ftp, filePath, destination, fileProgress):
     if os.path.dirname(destination) and not os.path.isdir(os.path.dirname(destination)):
         os.makedirs(os.path.dirname(destination))
 
-    #print "[%d%% done] Downloading file %s to %s" % (fileProgress, url, filename)
+    #print ("[%d%% done] Downloading file %s to %s" % (fileProgress, url, filename))
     print("[%d%% done] Downloading file %s" % (fileProgress, os.path.basename(destination)))
     print("             %s ==> %s" % (filePath, destination))
     downloadFromFTP(ftp, filePath, destination)

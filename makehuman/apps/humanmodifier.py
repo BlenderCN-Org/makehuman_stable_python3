@@ -10,7 +10,7 @@
 
 **Authors:**           Marc Flerackers, Glynn Clements, Jonas Hauquier
 
-**Copyright(c):**      MakeHuman Team 2001-2016
+**Copyright(c):**      MakeHuman Team 2001-2017
 
 **Licensing:**         AGPL3
 
@@ -445,7 +445,7 @@ class ManagedTargetModifier(Modifier):
         path = tuple(path.split('-'))
         for target in targets.getTargets().groups.get(path, []):
             keys = [key
-                    for key, var in target.data.items()
+                    for key, var in list(target.data.items())
                     if var is not None]
             result.update(keys)
         return result

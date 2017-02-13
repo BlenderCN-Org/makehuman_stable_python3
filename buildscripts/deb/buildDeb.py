@@ -339,6 +339,8 @@ def buildDeb(dest = None):
           print("Failed to chmod 755 folder %s" % dpath)
     subprocess.check_call(["chmod", "755", target])
   except:
+    subprocess.check_call(["chmod", "755", target])
+  except:
     print("Failed to chmod.")
 
   for x in files_to_chmod_executable:
@@ -364,6 +366,8 @@ def buildDeb(dest = None):
   debcmd = ["dpkg-deb", "-Z", "bzip2", "-z", "9", "-b", "../debroot", debfile]
 
   print(debcmd)
+  subprocess.check_call(debcmd)
+
   subprocess.check_call(debcmd)
 
   print("\n\n\nPackage is now available in " + debfile + "\n")
