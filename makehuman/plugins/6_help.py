@@ -65,28 +65,49 @@ class HelpTaskView(gui3d.TaskView):
 
         @self.websiteButton.mhEvent
         def onClicked(event):
-            webbrowser.open('http://www.makehuman.org');
+            webbrowser.open('http://www.makehumancommunity.org')
 
         @self.manualButton.mhEvent
         def onClicked(event):
-            webbrowser.open('http://www.makehumancommunity.org/wiki/Main_Page');
+            webbrowser.open('http://www.makehumancommunity.org/wiki/Main_Page')
         
         @self.reportBugButton.mhEvent
         def onClicked(event):
-            webbrowser.open('http://bugtracker.makehumancommunity.org/issues/new?project_id=makehuman');
+            webbrowser.open('http://bugtracker.makehumancommunity.org/issues/new?project_id=makehuman')
           
         @self.requestFeatureButton.mhEvent
         def onClicked(event):
-            webbrowser.open('http://bugtracker.makehumancommunity.org/issues/new?project_id=makehuman&issue[tracker_id]=2');
+            webbrowser.open('http://bugtracker.makehumancommunity.org/issues/new?project_id=makehuman&issue[tracker_id]=2')
             
         @self.forumButton.mhEvent
         def onClicked(event):
-            webbrowser.open('http://www.makehumancommunity.org/forum');
+            webbrowser.open('http://www.makehumancommunity.org/forum')
             
         @self.facebookButton.mhEvent
         def onClicked(event):
-            webbrowser.open('https://www.facebook.com/makehuman/');
-            
+            webbrowser.open('https://www.facebook.com/makehuman/')
+
+        @self.versionButton.mhEvent
+        def onClicked(event):
+            import makehuman
+            from core import G
+            self.rev = None
+            self.revid = None
+            self.branch = None
+            self.version = 'v' + makehuman.getVersionDigitsStr()
+            try:
+                hg = makehuman.get_revision_hg_info()
+                if hg:
+                    self.rev = 'r' + hg[0]
+                    self.revid = '(' + hg[1] + ')'
+                    self.branch = hg[2]
+            except:
+                pass
+            if self.rev and self.revid and self.branch:
+                version_string = ' '.join([self.version, self.branch, self.rev, self.revid])
+            else:
+                version_string = self.version
+            G.app.clipboard().setText(version_string)
             
     def onShow(self, event):
     
