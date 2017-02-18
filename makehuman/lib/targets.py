@@ -65,7 +65,9 @@ _categories = [cat for cat, value in _cat_data]
 _value_cat = dict([(value, cat)
                    for cat, values in _cat_data
                    for value in values])
-del cat, value, values
+
+# Removing as errant code for python 3 builds. Unsure why they were eben here RWB
+# del cat, value, values
 
 
 class Component(object):
