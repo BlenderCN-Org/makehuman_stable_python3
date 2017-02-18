@@ -131,7 +131,7 @@ class DebugDump(object):
             self.write("PLATFORM.MAC_VER: %s", platform.mac_ver()[0])
             
         if sys.platform == 'win32':
-            self.write("PLATFORM.WIN32_VER: %s", string.join(platform.win32_ver()," "))
+            self.write("PLATFORM.WIN32_VER: %s", " ".join(platform.win32_ver()))
 
         import numpy
         self.write("NUMPY.VERSION: %s", numpy.__version__)
