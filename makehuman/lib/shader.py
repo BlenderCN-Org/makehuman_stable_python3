@@ -426,7 +426,7 @@ class Shader(object):
             self.delete()
             return
 
-        self.vertexTangentAttrId = glGetAttribLocation(self.shaderId, 'tangent')
+        self.vertexTangentAttrId = glGetAttribLocation(self.shaderId, b'tangent')
 
         self.uniforms = None
         self.glUniforms = []
@@ -438,7 +438,7 @@ class Shader(object):
             self.uniforms = []
             for index in range(parameterCount):
                 name, size, type = glGetActiveUniform(self.shaderId, index)
-                if name.startswith('gl_'):
+                if name.startswith(b'gl_'):
                     log.debug("Shader: adding built-in uniform %s", name)
                     self.glUniforms.append(name)
                     continue
