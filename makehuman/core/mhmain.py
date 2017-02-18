@@ -1326,7 +1326,14 @@ class MHApplication(gui3d.Application, mh.Application):
 
         return True
 
-        for action, (modifier, key) in self.shortcuts.items():
+    def resetShortcuts(self):
+
+        self.shortcuts = dict(self._default_shortcuts)
+        for action, (modifier, key) in self.shortcuts.iteritems():
+            action = getattr(self.actions, action, None)
+            if action is not None:
+                mh.setShortcut(modifier, key, action)
+
     def getShortcut(self, action):
         return self.shortcuts.get(action.name)
 
