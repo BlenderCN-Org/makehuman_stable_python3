@@ -129,8 +129,8 @@ class SelectionColorMap:
         :return: The selected face group.
         :rtype: :py:class:`module3d.FaceGroup`
         """
-
-        IDkey = picked[0] / 8 | picked[1] / 8 << 5 | picked[2] / 8 << 10  # 555
+        # Force integer divide
+        IDkey = picked[0] // 8 | picked[1] // 8 << 5 | picked[2] // 8 << 10  # 555
 
         # print "DEBUG COLOR PICKED: %s,%s,%s %s"%(picked[0], picked[1], picked[2], IDkey)
 
