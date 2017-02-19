@@ -36,10 +36,8 @@ Abstract
 
 This file starts the MakeHuman python application.
 """
-
-  # Fix 'from . import x' statements on python 2.6
+from __future__ import print_function # Removes a bunch of warnings in PyCharm, though probably superfluous
 import sys
-# sys.setdefaultencoding('utf-8')
 import os
 import re
 import subprocess
