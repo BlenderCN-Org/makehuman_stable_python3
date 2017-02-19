@@ -118,7 +118,7 @@ pickingBufferDirty = True
 def updatePickingBuffer():
     width = G.windowWidth
     height = G.windowHeight
-    rwidth = (width + 3) / 4 * 4
+    rwidth = (width + 3) // 4 * 4
 
     # Resize the buffer in case the window size has changed
     global pickingBuffer
