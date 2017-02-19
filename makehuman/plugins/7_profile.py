@@ -35,6 +35,7 @@ Abstract
 
 TODO
 """
+import io
 
 import gui3d
 import mh
@@ -201,7 +202,7 @@ class ProfilingTaskView(gui3d.TaskView):
     def saveStats(self, path):
         if not path:
             return
-        with open(path, 'w') as f:
+        with io.open(path, 'w') as f:
             pstats.Stats(self.profile, stream=f).strip_dirs().sort_stats(-1).print_stats()
 
 def load(app):

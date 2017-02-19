@@ -24,6 +24,7 @@ from . import data_types
 from struct import pack
 import array
 import zlib
+import io
 
 _BLOCK_SENTINEL_LENGTH = 13
 _BLOCK_SENTINEL_DATA = (b'\0' * _BLOCK_SENTINEL_LENGTH)
@@ -318,7 +319,7 @@ def write(fn, elem_root, version=None):
         from . import fbx_utils
         version = fbx_utils.FBX_VERSION
 
-    with open(fn, 'wb') as f:
+    with io.open(fn, 'wb') as f:
         write = f.write
         tell = f.tell
 

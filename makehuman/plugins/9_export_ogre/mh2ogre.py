@@ -79,7 +79,7 @@ def writeMeshFile(human, filepath, objects, config):
     filename = os.path.basename(filepath)
     name = formatName(os.path.splitext(filename)[0])
 
-    f = codecs.open(filepath, 'w', encoding="utf-8")
+    f = io.open(filepath, 'w', encoding="utf-8")
     lines = []
     lines.append('<?xml version="1.0" encoding="UTF-8"?>')
     lines.append('<!-- Exported from MakeHuman (www.makehuman.org) -->')
@@ -224,7 +224,7 @@ def writeSkeletonFile(human, filepath, config):
     if config.scale != 1:
         skel = skel.scaled(config.scale)
 
-    f = codecs.open(filepath, 'w', encoding="utf-8")
+    f = io.open(filepath, 'w', encoding="utf-8")
     lines = []
 
     lines.append('<?xml version="1.0" encoding="UTF-8"?>')
@@ -286,7 +286,7 @@ def writeMaterialFile(human, filepath, objects, config):
     filename = filename + ".material"
     filepath = os.path.join(folderpath, filename)
 
-    f = codecs.open(filepath, 'w', encoding="utf-8")
+    f = io.open(filepath, 'w', encoding="utf-8")
     lines = []
 
     for objIdx, obj in enumerate(objects):

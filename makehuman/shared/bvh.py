@@ -41,6 +41,7 @@ transforming them into bone-based skeletons for use with skeletal animation.
 import skeleton
 import animation
 import log
+import io
 
 import numpy as np
 import transformations as tm
@@ -290,7 +291,7 @@ class BVH():
         else:
             autoAxis = False
 
-        fp = open(filepath, "rU")
+        fp = io.open(filepath, "rU")
 
         # Read hierarchy
         self.__expectKeyword('HIERARCHY', fp)
@@ -467,7 +468,7 @@ class BVH():
         """
         Write this BVH structure to a file.
         """
-        f = open(filename, 'w')
+        f = io.open(filename, 'w')
 
         # Write structure
         f.write('HIERARCHY\n')

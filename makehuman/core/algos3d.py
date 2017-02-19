@@ -60,6 +60,7 @@ import os
 import numpy as np
 import log
 from getpath import getSysDataPath, canonicalPath
+import io
 
 _targetBuffer = {}
 
@@ -123,7 +124,7 @@ class Target(object):
         import makehuman
         data = []
         license = defaultTargetLicense()
-        with open(name, 'rU') as fd:
+        with io.open(name, 'rU') as fd:
             for line in fd:
                 line = line.strip()
                 if line.startswith('#'):
@@ -452,7 +453,7 @@ def saveTranslationTarget(obj, targetPath, groupToSave=None, epsilon=0.001):
     nVertsExported = len(vertsToSave)
 
     try:
-        with open(targetPath, 'w') as fileDescriptor:
+        with io.open(targetPath, 'w') as fileDescriptor:
             for i in range(nVertsExported):
                 fileDescriptor.write('%d %f %f %f\n' % (vertsToSave[i], delta[i,0], delta[i,1], delta[i,2]))
 
