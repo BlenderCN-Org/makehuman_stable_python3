@@ -36,6 +36,7 @@ Abstract
 Utility for making clothes to MH characters.
 """
 
+# TODO: Review the documentation pointed to by the URL below
 bl_info = {
     "name": "Make Clothes",
     "author": "Thomas Larsson",
@@ -44,7 +45,7 @@ bl_info = {
     "location": "View3D > Properties > Make MH clothes",
     "description": "Make clothes and UVs for MakeHuman characters",
     "warning": "",
-    'wiki_url': "http://web.archive.org/web/20150317163903/www.makehuman.org/doc/node/mhblendertools_makeclothes.html",
+    'wiki_url': "http://www.makehumancommunity.org/wiki/Documentation:MHBlenderTools:MakeClothes",
     "category": "MakeHuman"}
 
 
