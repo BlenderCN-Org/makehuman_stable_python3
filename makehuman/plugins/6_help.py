@@ -59,6 +59,9 @@ class HelpTaskView(gui3d.TaskView):
         self.reportBugButton = optionsBox.addWidget(gui.Button("Report bug"))
         self.requestFeatureButton = optionsBox.addWidget(gui.Button("Request feature"))   
 
+        copyBox = self.addLeftWidget(gui.GroupBox('Copy to clipboard'))
+        self.versionButton = copyBox.addWidget(gui.Button('Version String'))
+
         @self.aboutButton.mhEvent
         def onClicked(event):
             gui3d.app.about()
