@@ -48,6 +48,9 @@ VERSION = "1.2"
 
 '''The minimum distance a vert from original has to be moved before it is added
 in a target.'''
+
+import io
+
 EPSILON = 0.001
 EPSILON_SQUARED = EPSILON*EPSILON
 
@@ -192,7 +195,7 @@ class Obj(object):
             *string*. A string containing the operating system path to the
             file that contains the wavefront obj.
         """
-        fd = open(path)
+        fd = io.open(path)
         data = fd.readline()
         lineNb = 0
         try:
@@ -215,8 +218,8 @@ class Obj(object):
         
     def write(self, outPath):
         '''Writes full .obj back to file using altered vertices and original data from the obj.'''
-        outfile = open(outPath, 'wb') # write binary to enforce unix line-endings on windows
-        infile = open(self.filepath, 'r')
+        outfile = io.open(outPath, 'wb') # write binary to enforce unix line-endings on windows
+        infile = io.open(self.filepath, 'r')
         vertsWritten = False
         inData = infile.readline()
         while inData:
@@ -269,7 +272,7 @@ class Target(object):
         
     def _loadVerts(self, path):
         '''Load vertices in this target from the specified file.'''
-        fd = open(path)
+        fd = io.open(path)
         data = fd.readline()
         lineNb = 0
         try:
@@ -310,7 +313,7 @@ class Target(object):
 
     def write(self, outPath):
         '''Write this target to specified file.'''
-        outfile = open(outPath, 'wb') # write binary to enforce unix line-endings on windows
+        outfile = io.open(outPath, 'wb') # write binary to enforce unix line-endings on windows
         for index in self.verts:
             vert = self.verts[index]
             outfile.write("%d %s %s %s\n"% (index, self.formatFloat(vert.x), self.formatFloat(vert.y), self.formatFloat(vert.z)))

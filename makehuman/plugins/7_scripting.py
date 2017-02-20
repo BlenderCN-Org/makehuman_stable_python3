@@ -35,6 +35,7 @@ Abstract
 
 TODO
 """
+import io
 
 # We need this for gui controls
 import gui3d
@@ -44,9 +45,7 @@ import material
 import gui
 import log
 import os
-from io import StringIO
 from core import G
-from codecs import open
 
 class ScriptingView(gui3d.TaskView):
 
@@ -76,7 +75,7 @@ class ScriptingView(gui3d.TaskView):
                 return
 
             if(os.path.exists(filename)):
-                contents = open(filename, 'rU', encoding="utf-8").read()
+                contents = io.open(filename, 'rU', encoding="utf-8").read()
                 self.scriptText.setText(contents)
                 dlg = gui.Dialog()
                 dlg.prompt("Load script","File was loaded in an acceptable manner","OK")
@@ -91,7 +90,7 @@ class ScriptingView(gui3d.TaskView):
             if not filename:
                 return
 
-            with open(filename, "w", encoding="utf-8") as f:
+            with io.open(filename, "w", encoding="utf-8") as f:
                 f.write(self.scriptText.getText())
             dlg = gui.Dialog()
             dlg.prompt("Save script","File was written in an acceptable manner","OK")

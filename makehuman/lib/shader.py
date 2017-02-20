@@ -43,6 +43,7 @@ from OpenGL.GL.ARB.texture_multisample import *
 import texture
 import log
 from core import G
+import io
 
 class Uniform(object):
     def __init__(self, index, name, pytype, dims):
@@ -313,7 +314,7 @@ class Shader(object):
 
     @staticmethod
     def createShader(file, type, defines = [], defineables = None):
-        with open(file, 'rU') as f:
+        with io.open(file, 'rU') as f:
             source = f.read()
         if "#version" not in source:
             log.warning("The shader source in %s does not contain an explicit GLSL version declaration. This could cause problems with some compilers.", file)

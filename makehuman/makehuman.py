@@ -39,6 +39,7 @@ This file starts the MakeHuman python application.
 from __future__ import print_function # Removes a bunch of warnings in PyCharm, though probably superfluous
 import sys
 import os
+import io
 import re
 import subprocess
 
@@ -192,7 +193,7 @@ def get_revision_dirstate_parent(folder=None):
     # First fallback: try to parse the dirstate file in .hg manually
     import binascii
 
-    dirstatefile = open(getHgRoot('.hg/dirstate'), 'r')
+    dirstatefile = io.open(getHgRoot('.hg/dirstate'), 'r')
     st = dirstatefile.read(40)
     dirstatefile.close()
     l = len(st)
@@ -204,7 +205,7 @@ def get_revision_dirstate_parent(folder=None):
 
     # Build mapping of nodeid to local revision number
     node_rev_map = dict()
-    revlogfile = open(getHgRoot('.hg/store/00changelog.i'), 'r')
+    revlogfile = io.open(getHgRoot('.hg/store/00changelog.i'), 'r')
     st = revlogfile.read(32)
 
     rev_idx = 0
@@ -227,7 +228,7 @@ def get_revision_dirstate_parent(folder=None):
 def get_revision_cache_tip(folder=None):
     # Second fallback: try to parse the cache file in .hg manually
     # Retrieves revision of tip, which might not actually be the working dir parent revision
-    cachefile = open(getHgRoot('.hg/cache/tags'), 'r')
+    cachefile = io.open(getHgRoot('.hg/cache/tags'), 'r')
     for line in iter(cachefile):
         if line == "\n":
             break
@@ -327,7 +328,7 @@ def get_hg_revision():
     import getpath
     versionFile = getpath.getSysDataPath("VERSION")
     if os.path.exists(versionFile):
-        version_ = open(versionFile).read().strip()
+        version_ = io.open(versionFile).read().strip()
         print("data/VERSION file detected using value from version file: %s" % version_, file=sys.stderr)
         os.environ['HGREVISION'] = str(version_.split(':')[0])
         os.environ['HGNODEID'] = str(version_.split(':')[1])
@@ -378,13 +379,12 @@ def get_platform_paths():
         stderr_filename = os.path.join(home, "makehuman-error.txt")
 
 def redirect_standard_streams():
-    from io import open
     import locale
     encoding = locale.getpreferredencoding()
     if stdout_filename:
-        sys.stdout = open(stdout_filename, "w", encoding=encoding, errors="replace")
+        sys.stdout = io.open(stdout_filename, "w", encoding=encoding, errors="replace")
     if stderr_filename:
-        sys.stderr = open(stderr_filename, "w", encoding=encoding, errors="replace")
+        sys.stderr = io.open(stderr_filename, "w", encoding=encoding, errors="replace")
 
 def close_standard_streams():
     sys.stdout.close()
@@ -769,7 +769,7 @@ makes use of.\n"""
         if not os.path.isfile(lfile):
             result += "\n%s\n" % _error("Error: License file %s is not found, this is an incomplete MakeHuman distribution!" % lfile)
             continue
-        f = open(lfile, encoding='utf-8')
+        f = io.open(lfile, encoding='utf-8')
         text = f.read()
         f.close()
         text = _wordwrap(text)

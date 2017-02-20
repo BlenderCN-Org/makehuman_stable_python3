@@ -41,7 +41,7 @@ TODO
 
 import os.path
 import time
-import codecs
+import io
 import log
 import getpath
 import bvh
@@ -105,7 +105,7 @@ def exportCollada(filepath, config):
         progress(0.5, 0.55, "Exporting %s", filepath)
 
         try:
-            fp = codecs.open(filepath, 'w', encoding="utf-8")
+            fp = io.open(filepath, 'w', encoding="utf-8")
             log.message("Writing Collada file %s" % filepath)
         except:
             fp = None

@@ -37,7 +37,7 @@ Fbx exporter
 """
 
 import os.path
-import codecs
+import io
 
 from core import G
 import log
@@ -99,7 +99,7 @@ def exportFbx(filepath, config):
         root = fbx_binary.elem_empty(None, b"")
         fp = root
     else:
-        fp = codecs.open(filepath, "w", encoding="utf-8")
+        fp = io.open(filepath, "w", encoding="utf-8")
 
     fbx_utils.resetId()  # Reset global ID generator
     fbx_utils.setAbsolutePath(filepath)  # TODO fix this

@@ -34,7 +34,7 @@ Abstract
 --------
 
 """
-
+# TODO: update documentation for WIKI cited below
 bl_info = {
     "name": "Make Target",
     "author": "Thomas Larsson",
@@ -43,7 +43,7 @@ bl_info = {
     "location": "View3D > Properties > Make Target",
     "description": "Make MakeHuman Target",
     "warning": "",
-    'wiki_url': "http://web.archive.org/web/20141013235052/www.makehuman.org/doc/node/mhblendertools_maketarget.html",
+    'wiki_url': "http://www.makehumancommunity.org/wiki/Documentation:MHBlenderTools:_MakeTarget",
     "category": "MakeHuman"}
 
 if "bpy" in locals():

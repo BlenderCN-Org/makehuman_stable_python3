@@ -40,6 +40,7 @@ import sys
 import os
 import glob
 import imp
+import io
 
 from core import G
 import mh
@@ -60,11 +61,11 @@ import contextlib
 
 @contextlib.contextmanager
 def outFile(path):
-    from codecs import open
+    import io
     path = mh.getPath(path)
     tmppath = path + '.tmp'
     try:
-        with open(tmppath, 'w', encoding="utf-8") as f:
+        with io.open(tmppath, 'w', encoding="utf-8") as f:
             yield f
         if os.path.exists(path):
             os.remove(path)
@@ -76,13 +77,13 @@ def outFile(path):
 
 @contextlib.contextmanager
 def inFile(path):
-    from codecs import open
+    import io
     try:
         path = mh.getPath(path)
         if not os.path.isfile(path):
             yield []
             return
-        with open(path, 'rU', encoding="utf-8") as f:
+        with io.open(path, 'rU', encoding="utf-8") as f:
             yield f
     except:
         log.error('Failed to load file %s', path, exc_info=True)
@@ -998,7 +999,7 @@ class MHApplication(gui3d.Application, mh.Application):
         self.bgTopLeftColor = [0.312, 0.312, 0.312]
         self.bgTopRightColor = [0.312, 0.312, 0.312]
 
-        f = open(os.path.join(mh.getSysDataPath("themes/"), theme + ".mht"), 'rU')
+        f = io.open(os.path.join(mh.getSysDataPath("themes/"), theme + ".mht"), 'rU')
 
         update_log = False
         for data in f.readlines():
@@ -1047,7 +1048,7 @@ class MHApplication(gui3d.Application, mh.Application):
         log.debug("Loaded theme %s", mh.getSysDataPath('themes/'+theme+'.mht'))
 
         try:
-            f = open(mh.getSysDataPath('themes/%s.qss' % theme), 'r')
+            f = io.open(mh.getSysDataPath('themes/%s.qss' % theme), 'r')
             qStyle = "\n".join(f.readlines())
             self.setStyleSheet(qStyle)
             # Also set stylesheet on custom slider style

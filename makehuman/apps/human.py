@@ -1392,7 +1392,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.callEvent('onChanged', event)
 
     def load(self, filename, update=True, strict=False):
-        from codecs import open
+        import io
 
         def _compare_versions(mhmVersion,pgmVersion):
             """ Return true if major+minor matches, false if they do not. Ignore patch number. """
@@ -1424,7 +1424,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
         subdivide = False
 
-        f = open(filename, 'rU', encoding="utf-8")
+        f = io.open(filename, 'rU', encoding="utf-8")
 
         for lh in list(G.app.loadHandlers.values()):
             try:
@@ -1520,14 +1520,14 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         log.message("Done loading MHM file.")
 
     def save(self, filename, tags):
-        from codecs import open
+        import io
         from progress import Progress
         progress = Progress(len(G.app.saveHandlers))
         event = events3d.HumanEvent(self, 'save')
         event.path = filename
         self.callEvent('onChanging', event)
 
-        f = open(filename, "w", encoding="utf-8")
+        f = io.open(filename, "w", encoding="utf-8")
         f.write('# Written by MakeHuman %s\n' % getVersionStr())
         f.write('version %s\n' % getShortVersion(noSub=True))
         f.write('tags %s\n' % tags)
