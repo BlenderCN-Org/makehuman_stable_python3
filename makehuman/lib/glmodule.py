@@ -40,6 +40,7 @@ from core import G
 import numpy as np
 
 import OpenGL
+import OpenGL.GLU
 OpenGL.ERROR_CHECKING = G.args.get('debugopengl', False)
 OpenGL.ERROR_LOGGING = G.args.get('debugopengl', False)
 OpenGL.FULL_LOGGING = G.args.get('fullloggingopengl', False)
