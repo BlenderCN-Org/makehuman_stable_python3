@@ -762,11 +762,10 @@ class Application(QtGui.QApplication, events3d.EventHandler):
             orders = [h.sortOrder for h in self.eventHandlers]
             o = max(orders) +1
             handler.sortOrder = o
+        #else:
+        #    handler.sortOrder = sortOrder
 
         self.eventHandlers.append(handler)
-# TODO: Restore line 784 with python 3 compliance
-# Sort on next line needs to be made Python 3 compliant
-# Currently it breaks loading of multiple plugins    
         #self.eventHandlers.sort(key = lambda h: h.sortOrder)
 
     def callEventHandlers(self, event_type, event):
