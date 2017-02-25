@@ -37,6 +37,7 @@ TODO
 """
 
 import os
+import io
 import math
 import numpy as np
 from core import G
@@ -788,7 +789,7 @@ class TMatrix:
         def _unpack_scales(scales, vidxs):
             scaleData = [None, None, None]
             for i in range(3):
-                if i >= min(len(scales), len(vidxs)/2):
+                if i >= min(len(scales), len(vidxs)//2):
                     break
                 scale = scales[i]
                 if not math.isnan(scale):
@@ -799,7 +800,7 @@ class TMatrix:
         def _unpack_shears(shears, vidxs):
             shearData = [None, None, None]
             for i in range(3):
-                if i >= min(len(scales)/2, len(vidxs)/2):
+                if i >= min(len(shears)//2, len(vidxs)//2):
                     break
                 shear1, shear2 = shears[i*2], shears[i*2+1]
                 vidx1, vidx2 = vidxs[i*2], vidxs[i*2+1]

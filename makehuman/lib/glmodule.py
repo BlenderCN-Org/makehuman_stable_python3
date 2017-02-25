@@ -97,8 +97,8 @@ def grabScreen(x, y, width, height, filename = None, productionRender=False):
     if width != rwidth or height != rheight:
         surf = np.zeros((height, width, 3), dtype = np.uint8) + 127
         surf[...] = surface[:1,:1,:]
-        dx0 = (width - rwidth) / 2
-        dy0 = (height - rheight) / 2
+        dx0 = (width - rwidth) // 2
+        dy0 = (height - rheight) // 2
         dx1 = dx0 + rwidth
         dy1 = dy0 + rheight
         surf[dy0:dy1,dx0:dx1] = surface
@@ -119,7 +119,7 @@ pickingBufferDirty = True
 def updatePickingBuffer():
     width = G.windowWidth
     height = G.windowHeight
-    rwidth = (width + 3) / 4 * 4
+    rwidth = (width + 3) // 4 * 4
 
     # Resize the buffer in case the window size has changed
     global pickingBuffer
@@ -816,14 +816,14 @@ def renderToBuffer(width, height, productionRender = True):
 
     # Now that framebuffer is bound, verify whether dimensions are within max supported dimensions
     maxWidth, maxHeight = glGetInteger(GL_MAX_VIEWPORT_DIMS)
-    aspect = float(height) / width
+    aspect = float(height) // width
     width = min(width, maxWidth)
     height = min(height, maxHeight)
     # Maintain original aspect ratio
     if aspect * width < height:
         height = int(aspect * width)
     else:
-        width = int(height / aspect)
+        width = int(height // aspect)
 
     # Create and bind renderbuffers
     renderbuffer = glGenRenderbuffers(1)    # We need a renderbuffer for both color and depth

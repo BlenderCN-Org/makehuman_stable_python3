@@ -394,7 +394,7 @@ class GridMesh(module3d.Object3D):
             spacing = float(spacing) / self.subgrids
 
             # Horizontal lines
-            sub = self.mainGridEnd/2
+            sub = self.mainGridEnd//2
             for i in range(hBoxes*(subgrids-1)):
                 boxOffset = (spacing * (i // (subgrids-1)))
                 pos = spacing + hBegin + (i * spacing) + boxOffset
@@ -481,9 +481,9 @@ class GridMesh(module3d.Object3D):
                 mask = self.face_mask
                 #mask = np.ones(self.getFaceCount(), dtype=np.bool)
                 if subgridVisible:
-                    mask[self.mainGridEnd/2:] = True
+                    mask[self.mainGridEnd//2:] = True
                 else:
-                    mask[self.mainGridEnd/2:] = False
+                    mask[self.mainGridEnd//2:] = False
                 self.changeFaceMask(mask)
                 self.updateIndexBufferFaces()
 

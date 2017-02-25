@@ -148,7 +148,7 @@ class SubdivisionObject(Object3D):
 
         _, x0 = np.unique(fvedges2, return_index=True)
         _, x1 = np.unique(fvedges2[::-1], return_index=True)
-        xmap = np.hstack((x0[:,None]/4, len(fvedges2) - 1 - x1[:,None]/4))
+        xmap = np.hstack((x0[:,None]//4, len(fvedges2) - 1 - x1[:,None]//4))
         vedgelist = np.hstack((vedgelist, xmap)).reshape((-1,2,2))
         del xmap
 
