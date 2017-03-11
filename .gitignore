@@ -29,8 +29,13 @@ __pycache__/
 *.mhpose
 *.meta
 *.mhuv
+*.mhw
+*.proxy
 *.mhpxy
 *.list
+*.bvh
+*.mhskel
+base_1-1_contents.txt
 
 # Pydev Eclipse#
 ################
