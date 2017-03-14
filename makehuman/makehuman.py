@@ -38,6 +38,7 @@ This file starts the MakeHuman python application.
 """
 from __future__ import print_function # Removes a bunch of warnings in PyCharm, though probably superfluous
 import sys
+# sys.setdefaultencoding('utf-8')
 import os
 import io
 import re
