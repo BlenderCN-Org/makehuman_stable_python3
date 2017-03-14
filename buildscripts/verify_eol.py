@@ -39,6 +39,8 @@ Validate the MH source code and detect and report any files containing windows
 line endings.
 """
 
+from __future__ import print_function
+
 import sys
 import os
 import mimetypes
