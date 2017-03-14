@@ -49,6 +49,12 @@ except NameError:
     # py3
     unicode = str
 
+if sys.version_info[0] == 3:
+    def _read_textfile(filename):
+        return open(filename, 'r', newline='', encoding='utf-8').read()
+else:
+    def _read_textfile(filename):
+        return unicode(open(filename, 'r').read(), encoding='utf-8')
 
 EXCLUDE_FOLDERS = ['.hg']
 
@@ -66,7 +72,7 @@ def check_dos_eol(path):
     global _recurse_files
     result = []
     for f in _recurse_get_ascii_files(path):
-        if "\r\n" in unicode(open(f, 'rb').read(), 'utf-8'):
+        if "\r\n" in _read_textfile(f):
             result.append( f )
     return result
 
