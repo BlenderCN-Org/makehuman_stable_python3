@@ -36,7 +36,9 @@ Abstract
 
 This file starts the MakeHuman python application.
 """
-from __future__ import print_function # Removes a bunch of warnings in PyCharm, though probably superfluous
+
+from __future__ import print_function
+
 import sys
 import os
 import io
