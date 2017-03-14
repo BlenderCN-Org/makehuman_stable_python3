@@ -43,6 +43,13 @@ import sys
 import os
 import mimetypes
 
+try:
+    unicode
+except NameError:
+    # py3
+    unicode = str
+
+
 EXCLUDE_FOLDERS = ['.hg']
 
 mimetypes.add_type('text/mhfile', '.mhclo')
@@ -59,14 +66,14 @@ def check_dos_eol(path):
     global _recurse_files
     result = []
     for f in _recurse_get_ascii_files(path):
-        if "\r\n" in open(f, 'r').read():
+        if "\r\n" in unicode(open(f, 'rb').read(), 'utf-8'):
             result.append( f )
     return result
 
 def fix_dos_eol(filepaths):
     for f in filepaths:
         fh = open(f, 'r')
-        contents = fh.read()
+        contents = unicode(fh.read(), 'utf-8')
         fh.close()
         contents = contents.replace('\r\n', '\n')
         contents = contents.replace('\r', '\n')
